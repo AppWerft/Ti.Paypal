@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 0.0.1
+apiversion: 2
+architectures: armeabi armeabi-v7a x86
+description: paypal
+author: Rainer Schleevoigt
+license: Specify your license
+copyright: Copyright (c) 2016 by 
+
+# these should not be edited
+name: paypal
+moduleid: ti.paypal
+guid: 350cce68-1225-45e4-855b-0dd13654c310
+platform: android
+minsdk: 5.2.0.GENPERM
