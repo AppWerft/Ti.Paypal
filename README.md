@@ -1,7 +1,7 @@
 # Ti.PayPal
 
 
-<img width="976" src="https://abload.de/img/showcase3vronaax58.png">
+
 
 Summary
 ---------------
