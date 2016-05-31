@@ -25,7 +25,7 @@ public class PaymentItemProxy extends KrollProxy {
 	String name;
 	BigDecimal price;
 	String sku;
-	int quantity;
+	int quantify;
 	String currency;
 	// https://github.com/paypal/PayPal-Android-SDK
 	final PayPalItem payPalItem;
@@ -33,7 +33,7 @@ public class PaymentItemProxy extends KrollProxy {
 	// Constructor
 	public PaymentItemProxy() {
 		super();
-		payPalItem = new PayPalItem(name, quantity, price, currency, sku);
+		payPalItem = new PayPalItem(name, quantify, price, currency, sku);
 	}
 
 	// Handle creation options
@@ -51,10 +51,10 @@ public class PaymentItemProxy extends KrollProxy {
 			sku = TiConvert.toString(args.get("sku"));
 		} else
 			Log.d(LCAT, "sku is missing");
-		if (args.containsKeyAndNotNull("quantity")) {
-			quantity = TiConvert.toInt(args.get("quantity"));
+		if (args.containsKeyAndNotNull("quantify")) {
+			quantify = TiConvert.toInt(args.get("quantify"));
 		} else
-			Log.d(LCAT, "quantity is missing");
+			Log.d(LCAT, "quantify is missing");
 		if (args.containsKeyAndNotNull("currency")) {
 			currency = TiConvert.toString(args.get("currency"));
 		} else
