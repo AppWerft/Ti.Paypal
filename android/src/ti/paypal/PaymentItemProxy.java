@@ -21,7 +21,6 @@ import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
-import android.support.v7.media.MediaRouter;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -38,6 +37,8 @@ import com.paypal.android.sdk.payments.ShippingAddress;
 
 import java.math.BigDecimal;
 
+import ti.paypal.PaypalModule;
+
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentItemProxy extends KrollProxy {
@@ -52,8 +53,8 @@ public class PaymentItemProxy extends KrollProxy {
 	private PayPalItem mPayPalItem;
 	// Constructor
 	public PaymentItemProxy() {
-		super();
-		new PayPalItem(name, quantity, price, currency,sku);
+		super();  
+		mPayPalItem = new PayPalItem(name, quantity, price, currency,sku);
 	}
 
 	// Handle creation options
