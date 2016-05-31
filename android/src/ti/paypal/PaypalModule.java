@@ -10,10 +10,9 @@ package ti.paypal;
 
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.KrollDict;
-
 import org.appcelerator.kroll.annotations.Kroll;
-
 import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 
@@ -22,7 +21,21 @@ public class PaypalModule extends KrollModule {
 
 	// Standard Debugging variables
 	private static final String LCAT = "PaypalModule";
-	private static final boolean DBG = TiConfig.LOGD;
+
+	public String clientIdSandbox;
+	public String clientIdProduction;
+	public int environment = 0;
+
+	@Kroll.constant
+	public static final int ENVIRONMENT_SANDBOX = 0;
+	@Kroll.constant
+	public static final int ENVIRONMENT_PRODUCTION = 1;
+	@Kroll.constant
+	public static int PAYMENT_INTENT_SALE = 0;
+	@Kroll.constant
+	public static int PAYMENT_INTENT_AUTHORIZE = 1;
+	@Kroll.constant
+	public static int PAYMENT_INTENT_ORDER = 2;
 
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
@@ -40,7 +53,16 @@ public class PaypalModule extends KrollModule {
 
 	@Kroll.method
 	public void initialize(KrollDict args) {
+		if (args.containsKeyAndNotNull("clientIdSandbox")) {
+			clientIdSandbox = TiConvert.toString(args.get("clientIdSandbox"));
+		}
+		if (args.containsKeyAndNotNull("clientIdProduction")) {
+			clientIdProduction = TiConvert.toString(args
+					.get("clientIdProduction"));
+		}
+		if (args.containsKeyAndNotNull("environment")) {
+			environment = TiConvert.toInt(args.get("environment"));
+		}
 	}
-
 
 }
