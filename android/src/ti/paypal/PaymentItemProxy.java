@@ -12,7 +12,7 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.Log;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.util.TiConfig;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.proxy.TiViewProxy;
@@ -21,6 +21,7 @@ import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
+import android.support.v7.media.MediaRouter;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -35,76 +36,49 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ShippingAddress;
 
+import java.math.BigDecimal;
+
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
-public class ExampleProxy extends TiViewProxy {
+public class PaymentItemProxy extends KrollProxy {
 	// Standard Debugging variables
-	private static final String LCAT = "ExampleProxy";
-	private static final boolean DBG = TiConfig.LOGD;
-
-	private class ExampleView extends TiUIView {
-		public ExampleView(TiViewProxy proxy) {
-			super(proxy);
-			LayoutArrangement arrangement = LayoutArrangement.DEFAULT;
-
-			if (proxy.hasProperty(TiC.PROPERTY_LAYOUT)) {
-				String layoutProperty = TiConvert.toString(proxy
-						.getProperty(TiC.PROPERTY_LAYOUT));
-				if (layoutProperty.equals(TiC.LAYOUT_HORIZONTAL)) {
-					arrangement = LayoutArrangement.HORIZONTAL;
-				} else if (layoutProperty.equals(TiC.LAYOUT_VERTICAL)) {
-					arrangement = LayoutArrangement.VERTICAL;
-				}
-			}
-			setNativeView(new TiCompositeLayout(proxy.getActivity(),
-					arrangement));
-		}
-
-		@Override
-		public void processProperties(KrollDict d) {
-			super.processProperties(d);
-		}
-	}
-
+	private static final String LCAT = "Paypal_PaymentItem";
+	String name;
+	BigDecimal price;
+	String sku;
+	int quantity;
+	String currency;
+	// https://github.com/paypal/PayPal-Android-SDK
+	private PayPalItem mPayPalItem;
 	// Constructor
-	public ExampleProxy() {
+	public PaymentItemProxy() {
 		super();
-	}
-
-	@Override
-	public TiUIView createView(Activity activity) {
-		TiUIView view = new ExampleView(this);
-		view.getLayoutParams().autoFillsHeight = true;
-		view.getLayoutParams().autoFillsWidth = true;
-		return view;
+		new PayPalItem(name, quantity, price, currency,sku);
 	}
 
 	// Handle creation options
 	@Override
-	public void handleCreationDict(KrollDict options) {
-		super.handleCreationDict(options);
-
-		if (options.containsKey("message")) {
-			Log.d(LCAT,
-					"example created with message: " + options.get("message"));
-		}
-	}
-
-	// Methods
-	@Kroll.method
-	public void printMessage(String message) {
-		Log.d(LCAT, "printing message: " + message);
-	}
-
-	@Kroll.getProperty
-	@Kroll.method
-	public String getMessage() {
-		return "Hello World from my module";
-	}
-
-	@Kroll.setProperty
-	@Kroll.method
-	public void setMessage(String message) {
-		Log.d(LCAT, "Tried setting module message to: " + message);
+	public void handleCreationDict(KrollDict args) {
+		super.handleCreationDict(args);
+		if (args.containsKeyAndNotNull("name")) {
+			name = TiConvert.toString(args.get("name"));
+		} else
+			Log.d(LCAT, "name is missing");
+		if (args.containsKeyAndNotNull("price")) {
+			price = new BigDecimal(TiConvert.toString(args.get("price")));
+		} else
+			Log.d(LCAT, "price is missing");
+		if (args.containsKeyAndNotNull("sku")) {
+			sku = TiConvert.toString(args.get("sku"));
+		} else
+			Log.d(LCAT, "sku is missing");
+		if (args.containsKeyAndNotNull("quantity")) {
+			quantity = TiConvert.toInt(args.get("quantity"));
+		} else
+			Log.d(LCAT, "quantity is missing");
+		if (args.containsKeyAndNotNull("currency")) {
+			currency = TiConvert.toString(args.get("currency"));
+		} else
+			Log.d(LCAT, "currency is missing");
 	}
 }
