@@ -9,16 +9,16 @@
 package ti.paypal;
 
 import org.appcelerator.kroll.KrollModule;
+import org.appcelerator.kroll.KrollDict;
+
 import org.appcelerator.kroll.annotations.Kroll;
 
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.kroll.common.TiConfig;
 
-
-@Kroll.module(name="Paypal", id="ti.paypal")
-public class PaypalModule extends KrollModule
-{
+@Kroll.module(name = "Paypal", id = "ti.paypal")
+public class PaypalModule extends KrollModule {
 
 	// Standard Debugging variables
 	private static final String LCAT = "PaypalModule";
@@ -27,39 +27,20 @@ public class PaypalModule extends KrollModule
 	// You can define constants with @Kroll.constant, for example:
 	// @Kroll.constant public static final String EXTERNAL_NAME = value;
 
-	public PaypalModule()
-	{
+	public PaypalModule() {
 		super();
 	}
 
 	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app)
-	{
+	public static void onAppCreate(TiApplication app) {
 		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is created
+		// put module init code that needs to run when the application is
+		// created
 	}
 
-	// Methods
 	@Kroll.method
-	public String example()
-	{
-		Log.d(LCAT, "example called");
-		return "hello world";
+	public void initialize(KrollDict args) {
 	}
 
-	// Properties
-	@Kroll.getProperty
-	public String getExampleProp()
-	{
-		Log.d(LCAT, "get example property");
-		return "hello world";
-	}
-
-
-	@Kroll.setProperty
-	public void setExampleProp(String value) {
-		Log.d(LCAT, "set example property: " + value);
-	}
 
 }
-
