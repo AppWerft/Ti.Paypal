@@ -11,32 +11,10 @@ package ti.paypal;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiC;
 import org.appcelerator.kroll.common.Log;
-import org.appcelerator.titanium.util.TiConfig;
 import org.appcelerator.titanium.util.TiConvert;
-import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.view.TiCompositeLayout;
-import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
-import org.appcelerator.titanium.view.TiUIView;
-
-import android.app.Activity;
-
-import com.paypal.android.sdk.payments.PayPalAuthorization;
-import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalItem;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
-import com.paypal.android.sdk.payments.PayPalPayment;
-import com.paypal.android.sdk.payments.PayPalPaymentDetails;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
-import com.paypal.android.sdk.payments.PayPalService;
-import com.paypal.android.sdk.payments.PaymentActivity;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
-import com.paypal.android.sdk.payments.ShippingAddress;
-
 import java.math.BigDecimal;
-
 import ti.paypal.PaypalModule;
 
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
@@ -50,17 +28,17 @@ public class PaymentItemProxy extends KrollProxy {
 	int quantity;
 	String currency;
 	// https://github.com/paypal/PayPal-Android-SDK
-	private PayPalItem mPayPalItem;
+	final PayPalItem payPalItem;
+
 	// Constructor
 	public PaymentItemProxy() {
-		super();  
-		mPayPalItem = new PayPalItem(name, quantity, price, currency,sku);
+		super();
+		payPalItem = new PayPalItem(name, quantity, price, currency, sku);
 	}
 
 	// Handle creation options
 	@Override
 	public void handleCreationDict(KrollDict args) {
-		super.handleCreationDict(args);
 		if (args.containsKeyAndNotNull("name")) {
 			name = TiConvert.toString(args.get("name"));
 		} else
@@ -81,5 +59,6 @@ public class PaymentItemProxy extends KrollProxy {
 			currency = TiConvert.toString(args.get("currency"));
 		} else
 			Log.d(LCAT, "currency is missing");
+		super.handleCreationDict(args);
 	}
 }

@@ -12,99 +12,64 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.Log;
-import org.appcelerator.titanium.util.TiConfig;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.util.TiConvert;
-import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.view.TiCompositeLayout;
-import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
-import org.appcelerator.titanium.view.TiUIView;
 
+import android.net.Uri;
 import android.app.Activity;
 
-import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
-import com.paypal.android.sdk.payments.PayPalItem;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
-import com.paypal.android.sdk.payments.PayPalPayment;
-import com.paypal.android.sdk.payments.PayPalPaymentDetails;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
-import com.paypal.android.sdk.payments.PayPalService;
-import com.paypal.android.sdk.payments.PaymentActivity;
-import com.paypal.android.sdk.payments.PaymentConfirmation;
-import com.paypal.android.sdk.payments.ShippingAddress;
+import ti.paypal.PaypalModule;
 
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
-public class ExampleProxy extends TiViewProxy {
+public class ConfigurationProxy extends KrollProxy {
 	// Standard Debugging variables
-	private static final String LCAT = "ExampleProxy";
-	private static final boolean DBG = TiConfig.LOGD;
+	private static final String LCAT = "PPConfiguration";
 
-	private class ExampleView extends TiUIView {
-		public ExampleView(TiViewProxy proxy) {
-			super(proxy);
-			LayoutArrangement arrangement = LayoutArrangement.DEFAULT;
+	public static String merchantName, merchantPrivacyPolicyURL,
+			merchantUserAgreementURL, locale;
 
-			if (proxy.hasProperty(TiC.PROPERTY_LAYOUT)) {
-				String layoutProperty = TiConvert.toString(proxy
-						.getProperty(TiC.PROPERTY_LAYOUT));
-				if (layoutProperty.equals(TiC.LAYOUT_HORIZONTAL)) {
-					arrangement = LayoutArrangement.HORIZONTAL;
-				} else if (layoutProperty.equals(TiC.LAYOUT_VERTICAL)) {
-					arrangement = LayoutArrangement.VERTICAL;
-				}
-			}
-			setNativeView(new TiCompositeLayout(proxy.getActivity(),
-					arrangement));
-		}
+	
 
-		@Override
-		public void processProperties(KrollDict d) {
-			super.processProperties(d);
-		}
-	}
+	private static PayPalConfiguration config = new PayPalConfiguration()
+			.environment(PaypalModule.CONFIG_ENVIRONMENT)
+			.clientId(PaypalModule.CLIENT_ID)
+			// The following are only used in PayPalFuturePaymentActivity.
+			.merchantName(merchantName)
+			.merchantPrivacyPolicyUri(Uri.parse(merchantPrivacyPolicyURL))
+			.merchantUserAgreementUri(Uri.parse(merchantUserAgreementURL));
 
 	// Constructor
-	public ExampleProxy() {
-		super();
-	}
-
-	@Override
-	public TiUIView createView(Activity activity) {
-		TiUIView view = new ExampleView(this);
-		view.getLayoutParams().autoFillsHeight = true;
-		view.getLayoutParams().autoFillsWidth = true;
-		return view;
-	}
-
+		public ConfigurationProxy() {
+			super();
+		}
+	
 	// Handle creation options
 	@Override
-	public void handleCreationDict(KrollDict options) {
-		super.handleCreationDict(options);
+	public void handleCreationDict(KrollDict args) {
+		if (args.containsKeyAndNotNull("merchantName")) {
+			merchantName = TiConvert.toString(args.get("merchantName"));
+		} else
+			Log.d(LCAT, "merchantName is missing");
 
-		if (options.containsKey("message")) {
-			Log.d(LCAT,
-					"example created with message: " + options.get("message"));
-		}
+		if (args.containsKeyAndNotNull("merchantPrivacyPolicyURL")) {
+			merchantPrivacyPolicyURL = TiConvert.toString(args
+					.get("merchantPrivacyPolicyURL"));
+		} else
+			Log.d(LCAT, "merchantPrivacyPolicyURL is missing");
+
+		if (args.containsKeyAndNotNull("merchantUserAgreementURL")) {
+			merchantUserAgreementURL = TiConvert.toString(args
+					.get("merchantUserAgreementURL"));
+		} else
+			Log.d(LCAT, "merchantUserAgreementURL is missing");
+
+		if (args.containsKeyAndNotNull("locale")) {
+			merchantUserAgreementURL = TiConvert.toString(args.get("locale"));
+		} else
+			Log.d(LCAT, "locale is missing");
+		super.handleCreationDict(args);
 	}
 
-	// Methods
-	@Kroll.method
-	public void printMessage(String message) {
-		Log.d(LCAT, "printing message: " + message);
-	}
-
-	@Kroll.getProperty
-	@Kroll.method
-	public String getMessage() {
-		return "Hello World from my module";
-	}
-
-	@Kroll.setProperty
-	@Kroll.method
-	public void setMessage(String message) {
-		Log.d(LCAT, "Tried setting module message to: " + message);
-	}
 }

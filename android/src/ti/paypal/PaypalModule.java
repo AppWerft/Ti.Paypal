@@ -9,6 +9,7 @@
 package ti.paypal;
 
 import org.appcelerator.kroll.KrollModule;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
@@ -24,7 +25,9 @@ public class PaypalModule extends KrollModule {
 
 	public String clientIdSandbox;
 	public String clientIdProduction;
-	public int environment = 0;
+	public static String CLIENT_ID;
+
+	public static int CONFIG_ENVIRONMENT;
 
 	@Kroll.constant
 	public static final int ENVIRONMENT_SANDBOX = 0;
@@ -37,9 +40,6 @@ public class PaypalModule extends KrollModule {
 	@Kroll.constant
 	public static int PAYMENT_INTENT_ORDER = 2;
 
-	// You can define constants with @Kroll.constant, for example:
-	// @Kroll.constant public static final String EXTERNAL_NAME = value;
-
 	public PaypalModule() {
 		super();
 	}
@@ -47,8 +47,6 @@ public class PaypalModule extends KrollModule {
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app) {
 		Log.d(LCAT, "inside onAppCreate");
-		// put module init code that needs to run when the application is
-		// created
 	}
 
 	@Kroll.method
@@ -61,8 +59,15 @@ public class PaypalModule extends KrollModule {
 					.get("clientIdProduction"));
 		}
 		if (args.containsKeyAndNotNull("environment")) {
-			environment = TiConvert.toInt(args.get("environment"));
+			CONFIG_ENVIRONMENT = TiConvert.toInt(args.get("environment"));
 		}
+		if (CONFIG_ENVIRONMENT == ENVIRONMENT_SANDBOX) {
+			CLIENT_ID = "0";
+		}
+		if (CONFIG_ENVIRONMENT == ENVIRONMENT_PRODUCTION) {
+			CLIENT_ID = "1";
+		}
+
 	}
 
 }
