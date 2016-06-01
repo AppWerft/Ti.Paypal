@@ -88,14 +88,15 @@ public class PaymentProxy extends KrollProxy {
 			
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
-			Object configurationProxy = options.get("configuration");
-			if (!(configurationProxy instanceof Object)) {
+			KrollDict configuration = options.getKrollDict("configuration");
+			if (!(configuration instanceof Object)) {
 				throw new IllegalArgumentException("Invalid argument type `"
-						+ configurationProxy.getClass().getName()
+						+ configuration.getClass().getName()
 						+ "` passed to consume()");
 			}
 		
 			PayPalConfiguration ppConfiguration = new PayPalConfiguration();
+			ppConfiguration.merchantName(configuration.getString("merchantName"));
 		}
 	}
 }
