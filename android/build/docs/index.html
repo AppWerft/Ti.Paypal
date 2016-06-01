@@ -11,11 +11,6 @@
 <li>Android API 22 or later</li>
 </ul>
 <h2>Download + Setup</h2>
-<h3>Download</h3>
-<ul>
-<li><a href="https://github.com/hansemannn/ti.paypal/releases">Stable release</a></li>
-<li>Install from gitTio    <a href="http://gitt.io/component/ti.paypal" target="_blank"><img src="http://gitt.io/badge@2x.png" width="120" height="18" alt="Available on gitTio" /></a></li>
-</ul>
 <h3>Setup</h3>
 <p>Unpack the module and place it inside the <code>modules/iphone/</code> folder of your project.
 Edit the modules section of your <code>tiapp.xml</code> file to include this module:
@@ -27,45 +22,46 @@ Edit the modules section of your <code>tiapp.xml</code> file to include this mod
 <code>javascript
 var PayPal = require("ti.paypal");
 PayPal.initialize({
-clientIdSandbox: "&lt;YOUR_CLIENT_ID_SANDBOX&gt;",
-clientIdProduction: "&lt;YOUR_CLIENT_ID_PRODUCTION&gt;",
-environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
+    clientIdSandbox: "&lt;YOUR_CLIENT_ID_SANDBOX&gt;",
+    clientIdProduction: "&lt;YOUR_CLIENT_ID_PRODUCTION&gt;",
+    environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
 });</code></p>
 <h2>Features</h2>
 <h4>Simple Payment</h4>
 <p>A simple payment is used for do instant payments with items you define. Watch the events for updates on your transaction.</p>
 <p>```javascript</p>
 <p>var item1 = PayPal.createPaymentItem({
-name: "My item",
-price: 23.99,
-sku: "my-item",
-quantity: 1,
-currency: "USD" // Any ISO-4217
+    name: "My item",
+    price: 23.99,
+    sku: "my-item",
+    quantity: 1,
+    currency: "USD" // Any ISO-4217
 });</p>
 <p>var configuration = PayPal.createConfiguration({
-merchantName: "John Doe",
-merchantPrivacyPolicyURL: "http://google.com",
-merchantUserAgreementURL: "http://google.com",
-locale: "en" // Any ISO 639-1
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en" // Any ISO 639-1
 });</p>
 <p>var payment = PayPal.createPayment({
-// Required
-configuration: configuration,
-currencyCode: "USD",
-amount: 23.99, // Has to match the amount of your items if you set them
-shortDescription: "Your shopping trip at FooBar",
-intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER</p>
-<p>// Optional, you can also just specify the amount
+    // Required
+    configuration: configuration,
+    currencyCode: "USD",
+    amount: 23.99, // Has to match the amount of your items if you set them
+    shortDescription: "Your shopping trip at FooBar",
+    intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER</p>
+<pre><code>// Optional, you can also just specify the amount
 items: [item1]
-});</p>
+</code></pre>
+<p>});</p>
 <p>payment.addEventListener("paymentDidCancel", function(e) {
-Ti.API.warn("paymentDidCancel");
+    Ti.API.warn("paymentDidCancel");
 });</p>
 <p>payment.addEventListener("paymentWillComplete", function(e) {
-Ti.API.warn("paymentWillComplete");
+    Ti.API.warn("paymentWillComplete");
 });</p>
 <p>payment.addEventListener("paymentDidComplete", function(e) {
-Ti.API.warn("paymentDidComplete");
+    Ti.API.warn("paymentDidComplete");
 });</p>
 <p>payment.show(); 
 ```</p>
@@ -73,10 +69,10 @@ Ti.API.warn("paymentDidComplete");
 <p>A future payment is used to ask the buyer for the permission to charge his account later.</p>
 <p>```javascript
 var configuration = PayPal.createConfiguration({
-merchantName: "John Doe",
-merchantPrivacyPolicyURL: "http://google.com",
-merchantUserAgreementURL: "http://google.com",
-locale: "en"
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en"
 });</p>
 <p>var payment = PayPal.createFuturePayment({
 configuration: configuration
