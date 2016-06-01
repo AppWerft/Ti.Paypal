@@ -20,10 +20,6 @@ Requirements
 Download + Setup
 ---------------
 
-### Download
-* [Stable release](https://github.com/hansemannn/ti.paypal/releases)
-* Install from gitTio    <a href="http://gitt.io/component/ti.paypal" target="_blank"><img src="http://gitt.io/badge@2x.png" width="120" height="18" alt="Available on gitTio" /></a>
-
 ### Setup
 Unpack the module and place it inside the `modules/iphone/` folder of your project.
 Edit the modules section of your `tiapp.xml` file to include this module:
@@ -37,9 +33,9 @@ Initialize the module by setting the PayPal credentials which you can get from [
 ```javascript
 var PayPal = require("ti.paypal");
 PayPal.initialize({
-clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
-clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
-environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
+    clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
+    clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
+    environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
 });
 ```
 
@@ -51,42 +47,42 @@ A simple payment is used for do instant payments with items you define. Watch th
 ```javascript
 
 var item1 = PayPal.createPaymentItem({
-name: "My item",
-price: 23.99,
-sku: "my-item",
-quantity: 1,
-currency: "USD" // Any ISO-4217
+    name: "My item",
+    price: 23.99,
+    sku: "my-item",
+    quantity: 1,
+    currency: "USD" // Any ISO-4217
 });
 
 var configuration = PayPal.createConfiguration({
-merchantName: "John Doe",
-merchantPrivacyPolicyURL: "http://google.com",
-merchantUserAgreementURL: "http://google.com",
-locale: "en" // Any ISO 639-1
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en" // Any ISO 639-1
 });
 
 var payment = PayPal.createPayment({
-// Required
-configuration: configuration,
-currencyCode: "USD",
-amount: 23.99, // Has to match the amount of your items if you set them
-shortDescription: "Your shopping trip at FooBar",
-intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
+    // Required
+    configuration: configuration,
+    currencyCode: "USD",
+    amount: 23.99, // Has to match the amount of your items if you set them
+    shortDescription: "Your shopping trip at FooBar",
+    intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
 
-// Optional, you can also just specify the amount
-items: [item1]
+    // Optional, you can also just specify the amount
+    items: [item1]
 });
 
 payment.addEventListener("paymentDidCancel", function(e) {
-Ti.API.warn("paymentDidCancel");
+    Ti.API.warn("paymentDidCancel");
 });
 
 payment.addEventListener("paymentWillComplete", function(e) {
-Ti.API.warn("paymentWillComplete");
+    Ti.API.warn("paymentWillComplete");
 });
 
 payment.addEventListener("paymentDidComplete", function(e) {
-Ti.API.warn("paymentDidComplete");
+    Ti.API.warn("paymentDidComplete");
 });
 
 payment.show();	
@@ -97,10 +93,10 @@ A future payment is used to ask the buyer for the permission to charge his accou
 
 ```javascript
 var configuration = PayPal.createConfiguration({
-merchantName: "John Doe",
-merchantPrivacyPolicyURL: "http://google.com",
-merchantUserAgreementURL: "http://google.com",
-locale: "en"
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en"
 });
 
 var payment = PayPal.createFuturePayment({
