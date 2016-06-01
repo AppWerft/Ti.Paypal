@@ -23,7 +23,6 @@ import android.app.Activity;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
@@ -68,25 +67,48 @@ public class PaymentProxy extends KrollProxy {
 
 		/* now importing of configuration and/or paymentitems : */
 		if (options.containsKeyAndNotNull("items")) {
-		    Object paymentItemProxies = options.get("items"); 
-	        List<PaymentItem> paymentItems = new ArrayList<PaymentItem>(); 
-	         
-	        if (!(paymentItemProxies instanceof Object[])) { 
-	            throw new IllegalArgumentException("Invalid argument type `" + paymentItemProxies.getClass().getName() + "` passed to consume()"); 
-	        } 
-	 
-	        for (int i = 0; i < ((Object[]) paymentItemProxies).length; i++) {          
-	            Object paymentItem = ((Object[]) paymentItemProxies)[i]; 
-	            if (!(paymentItem instanceof PaymentItemProxy)) { 
-	                throw new IllegalArgumentException("Invalid argument type `" + paymentItem.getClass().getName() + "` passed to consume()"); 
-	            } 
-	            paymentItems.add(((PaymentItemProxy) paymentItem).getPaymentItem()); 
-	        } 
-			
+			Object paymentItemProxies = options.get("items");
+			List<PaymentItem> paymentItems = new ArrayList<PaymentItem>();
 
+			if (!(paymentItemProxies instanceof Object[])) {
+				throw new IllegalArgumentException("Invalid argument type `"
+						+ paymentItemProxies.getClass().getName()
+						+ "` passed to consume()");
+			}
+			/* iterating thru array */
+			for (int i = 0; i < ((Object[]) paymentItemProxies).length; i++) {
+				Object paymentItem = ((Object[]) paymentItemProxies)[i];
+				if (!(paymentItem instanceof PaymentItemProxy)) {
+					throw new IllegalArgumentException(
+							"Invalid argument type `"
+									+ paymentItem.getClass().getName()
+									+ "` passed to consume()");
+				}
+				paymentItems.add(((PaymentItemProxy) paymentItem)
+						.getPaymentItem());
+			}
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
-			Object paymentConfiguration = options.get("configurations");
+			Object configurationProxies = options.get("configuration");
+			List<Configuration> configurations = new ArrayList<Configuration>();
+
+			if (!(configurationProxies instanceof Object[])) {
+				throw new IllegalArgumentException("Invalid argument type `"
+						+ configurationProxies.getClass().getName()
+						+ "` passed to consume()");
+			}
+			/* iterating thru array */
+			for (int i = 0; i < ((Object[]) configurationProxies).length; i++) {
+				Object configuration = ((Object[]) configurationProxies)[i];
+				if (!(configuration instanceof ConfigurationProxy)) {
+					throw new IllegalArgumentException(
+							"Invalid argument type `"
+									+ configuration.getClass().getName()
+									+ "` passed to consume()");
+				}
+				configuration.add(((ConfigurationProxy) configuration)
+						.getConfiguration());
+			}
 
 		}
 
