@@ -25,6 +25,8 @@ function moduleBootstrap(moduleBinding) {
 	}
 
 		addInvocationAPI(module, "Paypal", "Paypal", "createPayment");
+	addInvocationAPI(module, "Paypal", "Paypal", "createConfiguration");
+	addInvocationAPI(module, "Paypal", "Paypal", "createPaymentItem");
 
 			if (!("__propertiesDefined__" in module)) {		
 		Object.defineProperties(module, {
@@ -53,6 +55,12 @@ function moduleBootstrap(moduleBinding) {
 		});
 		module.constructor.prototype.createPayment = function() {
 			return new module.Payment(arguments);
+		}
+		module.constructor.prototype.createConfiguration = function() {
+			return new module.Configuration(arguments);
+		}
+		module.constructor.prototype.createPaymentItem = function() {
+			return new module.PaymentItem(arguments);
 		}
 		}
 		module.__propertiesDefined__ = true;

@@ -27,6 +27,7 @@ using namespace v8;
 
 		namespace ti {
 		namespace paypal {
+			namespace paypal {
 
 
 Persistent<FunctionTemplate> ConfigurationProxy::proxyTemplate = Persistent<FunctionTemplate>();
@@ -160,5 +161,6 @@ Handle<Value> ConfigurationProxy::createConfiguration(const Arguments& args)
 // Dynamic property accessors -------------------------------------------------
 
 
+			} // namespace paypal
 		} // paypal
 		} // ti

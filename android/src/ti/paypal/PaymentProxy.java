@@ -109,9 +109,6 @@ public class PaymentProxy extends KrollProxy {
 				configurations.add(((ConfigurationProxy) configuration)
 						.getConfiguration());
 			}
-
 		}
-
 	}
-
 }

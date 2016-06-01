@@ -21,6 +21,8 @@
 
 
 #include "ti.paypal.PaymentProxy.h"
+#include "ti.paypal.ConfigurationProxy.h"
+#include "ti.paypal.PaymentItemProxy.h"
 
 #include "org.appcelerator.kroll.KrollModule.h"
 

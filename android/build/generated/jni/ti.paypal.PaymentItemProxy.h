@@ -13,6 +13,7 @@
 
 		namespace ti {
 		namespace paypal {
+			namespace paypal {
 
 
 class PaymentItemProxy : public titanium::Proxy
@@ -35,5 +36,6 @@ private:
 
 };
 
+			} // namespace paypal
 		} // paypal
 		} // ti
