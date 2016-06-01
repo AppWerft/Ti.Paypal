@@ -3,7 +3,6 @@ package ti.paypal.util;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.titanium.util.TiConvert;
 
-
 /**
  * Represents a configuration.
  */

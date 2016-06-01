@@ -8,11 +8,6 @@ import ti.paypal.util.PaymentItem;
 public class PaymentItemProxy extends KrollProxy {
 	private PaymentItem paymentItem;
 
-	public PaymentItemProxy(PaymentItem p) {
-		super();
-		paymentItem = p;
-	}
-
 	public PaymentItemProxy() {
 		super();
 	}
