@@ -2,6 +2,7 @@ package ti.paypal;
 
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
+
 import ti.paypal.util.Configuration;
 
 
@@ -17,4 +18,10 @@ public class ConfigurationProxy extends KrollProxy {
 	public Configuration configuration() {
 		return configuration;
 	}
+	
+	 @Kroll.method
+	    public Configuration createConfiguration() {
+	    	return configuration;
+	    } 
+	    
 }

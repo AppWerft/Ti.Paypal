@@ -6,13 +6,17 @@
 #include <v8.h>
 #include <KrollBindings.h>
 
+#include "ti.paypal.ConfigurationProxy.h"
 #include "ti.paypal.PaypalModule.h"
 #include "ti.paypal.PaymentProxy.h"
+#include "ti.paypal.PaymentItemProxy.h"
 
 
 %}
 struct titanium::bindings::BindEntry;
 %%
+ti.paypal.ConfigurationProxy, ::ti::paypal::ConfigurationProxy::bindProxy, ::ti::paypal::ConfigurationProxy::dispose
 ti.paypal.PaypalModule, ::ti::paypal::PaypalModule::bindProxy, ::ti::paypal::PaypalModule::dispose
 ti.paypal.PaymentProxy, ::ti::paypal::paypal::PaymentProxy::bindProxy, ::ti::paypal::paypal::PaymentProxy::dispose
+ti.paypal.PaymentItemProxy, ::ti::paypal::PaymentItemProxy::bindProxy, ::ti::paypal::PaymentItemProxy::dispose
 %%

@@ -28,6 +28,20 @@ function moduleBootstrap(moduleBinding) {
 
 			if (!("__propertiesDefined__" in module)) {		
 		Object.defineProperties(module, {
+			"Configuration": {
+				get: function() {
+					var Configuration = lazyGet(this, "ti.paypal.ConfigurationProxy", "Configuration", "Configuration");
+					return Configuration;
+				},
+				configurable: true
+			},
+			"PaymentItem": {
+				get: function() {
+					var PaymentItem = lazyGet(this, "ti.paypal.PaymentItemProxy", "PaymentItem", "PaymentItem");
+					return PaymentItem;
+				},
+				configurable: true
+			},
 			"Payment": {
 				get: function() {
 					var Payment = lazyGet(this, "ti.paypal.PaymentProxy", "Payment", "Payment");

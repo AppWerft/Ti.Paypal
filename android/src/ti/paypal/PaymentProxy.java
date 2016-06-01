@@ -22,7 +22,7 @@ import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
-import  java.util.ArrayList;
+import java.util.ArrayList;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -41,14 +41,13 @@ import com.paypal.android.sdk.payments.ShippingAddress;
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
-	String currencyCode,shortDescription; 
+	String currencyCode, shortDescription;
 	int intent;
 
 	// Constructor
 	public PaymentProxy() {
 		super();
 	}
-
 
 	// Handle creation options
 	@Override
@@ -58,16 +57,22 @@ public class PaymentProxy extends KrollProxy {
 			currencyCode = TiConvert.toString(options.get("currencyCode"));
 		}
 		if (options.containsKeyAndNotNull("shortDescription")) {
-			shortDescription = TiConvert.toString(options.get("shortDescription"));
+			shortDescription = TiConvert.toString(options
+					.get("shortDescription"));
 		}
 		if (options.containsKeyAndNotNull("intent")) {
 			intent = TiConvert.toInt(options.get("intent"));
 		}
-		if (options.containsKeyAndNotNull("items")) {
-			ArrayList<Object> listofPaymentItems; 
-			listofPaymentItems =options.get("items");
-		}
 		
+		/* now importing of configuration and/or paymentitems : */
+		if (options.containsKeyAndNotNull("items")) {
+			Object items = options.get("items");
+
+		}
+		if (options.containsKeyAndNotNull("configuration")) {
+			Object configuration = options.get("configurations");
+
+		}
 
 	}
 
