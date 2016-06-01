@@ -66,11 +66,19 @@ public class PaypalModule extends KrollModule {
 			environment = TiConvert.toInt(args.get("environment"));
 		}
 		if (environment == ENVIRONMENT_SANDBOX) {
-			clientId=clientIdSandbox;
+			clientId = clientIdSandbox;
 		}
-		if (environment ==  ENVIRONMENT_PRODUCTION) {
-			clientId=clientIdProduction;
+		if (environment == ENVIRONMENT_PRODUCTION) {
+			clientId = clientIdProduction;
 		}
 
+	}
+	@Kroll.method
+	public KrollDict createConfiguration(KrollDict args) {
+		return args;
+	
+	}
+	public KrollDict createPaymentItem(KrollDict args) {
+		return args;
 	}
 }

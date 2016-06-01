@@ -149,9 +149,9 @@ Handle<Value> PaypalModule::createConfiguration(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(PaypalModule::javaClass, "createConfiguration", "(Lorg/appcelerator/kroll/KrollDict;)Lcom/paypal/android/sdk/payments/PayPalConfiguration;");
+		methodID = env->GetMethodID(PaypalModule::javaClass, "createConfiguration", "(Lorg/appcelerator/kroll/KrollDict;)Lorg/appcelerator/kroll/KrollDict;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'createConfiguration' with signature '(Lorg/appcelerator/kroll/KrollDict;)Lcom/paypal/android/sdk/payments/PayPalConfiguration;'";
+			const char *error = "Couldn't find proxy method 'createConfiguration' with signature '(Lorg/appcelerator/kroll/KrollDict;)Lorg/appcelerator/kroll/KrollDict;'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
