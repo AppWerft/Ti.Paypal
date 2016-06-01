@@ -84,28 +84,18 @@ public class PaymentProxy extends KrollProxy {
 				paymentItems.add(((PaymentItemProxy) paymentItem)
 						.getPaymentItem());
 			}
+			
+			
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
-			Object configurationProxies = options.get("configuration");
-			List<Configuration> configurations = new ArrayList<Configuration>();
-
-			if (!(configurationProxies instanceof Object[])) {
+			Object configurationProxy = options.get("configuration");
+			if (!(configurationProxy instanceof Object)) {
 				throw new IllegalArgumentException("Invalid argument type `"
-						+ configurationProxies.getClass().getName()
+						+ configurationProxy.getClass().getName()
 						+ "` passed to consume()");
 			}
-			/* iterating thru array */
-			for (int i = 0; i < ((Object[]) configurationProxies).length; i++) {
-				Object configuration = ((Object[]) configurationProxies)[i];
-				if (!(configuration instanceof ConfigurationProxy)) {
-					throw new IllegalArgumentException(
-							"Invalid argument type `"
-									+ configuration.getClass().getName()
-									+ "` passed to consume()");
-				}
-				configurations.add(((ConfigurationProxy) configuration)
-						.getConfiguration());
-			}
+		
+			PayPalConfiguration ppConfiguration = new PayPalConfiguration();
 		}
 	}
 }
