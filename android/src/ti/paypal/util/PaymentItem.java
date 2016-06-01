@@ -1,13 +1,11 @@
 package ti.paypal.util;
 
 import org.appcelerator.kroll.KrollDict;
-
 import org.appcelerator.titanium.util.TiConvert;
-
 import java.math.BigDecimal;
 
 /**
- * Represents an in-app billing purchase.
+ * Represents an PaymentItem.
  */
 public class PaymentItem {
 	String name = "", sku = "", currency = "EU";
