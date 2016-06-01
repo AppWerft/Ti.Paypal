@@ -12,14 +12,11 @@ import org.appcelerator.kroll.KrollDict;
 
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.TiConvert;
-import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.view.TiCompositeLayout;
-import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
-import org.appcelerator.titanium.view.TiUIView;
 
-import android.app.Activity;
+import org.appcelerator.titanium.util.TiConvert;
+import ti.paypal.util.PaymentItem;
+import ti.paypal.util.Configuration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +33,7 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ShippingAddress;
 
-import ti.paypal.util.*;
+//import ti.paypal.util.*;
 
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
