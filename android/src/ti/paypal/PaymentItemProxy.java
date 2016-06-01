@@ -7,7 +7,7 @@ import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.util.TiConvert;
 
-import ti.paypal.util.PaymentItem;
+//import ti.paypal.util.PaymentItem;
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentItemProxy extends KrollProxy {
@@ -15,6 +15,7 @@ public class PaymentItemProxy extends KrollProxy {
 	private String name = "", sku = "", currency = "EU";
 	private BigDecimal price = new BigDecimal(0);
 	int quantify = 1;
+
 	public PaymentItemProxy() {
 		super();
 	}
@@ -22,7 +23,7 @@ public class PaymentItemProxy extends KrollProxy {
 	public PaymentItem getPaymentItem() {
 		return paymentItem;
 	}
-	
+
 	// Handle creation options
 	@Override
 	public void handleCreationDict(KrollDict args) {
@@ -41,7 +42,5 @@ public class PaymentItemProxy extends KrollProxy {
 		if (args.containsKeyAndNotNull("currency")) {
 			this.currency = TiConvert.toString(args.get("currency"));
 		}
-		
 	}
-	
 }
