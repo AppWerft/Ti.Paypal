@@ -15,11 +15,6 @@ public class PaymentItem extends KrollDict {
 
 	public PaymentItem() {
 		super();
-		name = "";
-		sku = "";
-		currency = "EU";
-		price = new BigDecimal(0);
-	    quantify = 1;
 	}
 
 	@Override
