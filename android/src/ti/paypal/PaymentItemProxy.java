@@ -4,7 +4,7 @@ import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import ti.paypal.util.PaymentItem;
 
-@Kroll.proxy
+@Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentItemProxy extends KrollProxy {
 	private PaymentItem paymentItem;
 
@@ -15,11 +15,6 @@ public class PaymentItemProxy extends KrollProxy {
 
 	public PaymentItemProxy() {
 		super();
-	}
-
-	@Kroll.method
-	public PaymentItem createPaymentItem() {
-		return paymentItem;
 	}
 
 	public PaymentItem getPaymentItem() {
