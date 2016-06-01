@@ -13,6 +13,10 @@ public class PaymentItemProxy extends KrollProxy {
 		paymentItem = p;
 	}
 
+	public PaymentItemProxy() {
+		super();
+	}
+
 	@Kroll.method
 	public PaymentItem createPaymentItem() {
 		return paymentItem;
