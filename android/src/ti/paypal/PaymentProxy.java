@@ -13,8 +13,6 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.util.Log;
-import org.appcelerator.titanium.util.TiConfig;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiCompositeLayout;
@@ -23,6 +21,8 @@ import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
 import java.util.ArrayList;
+import java.util.List;
+
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -36,6 +36,8 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ShippingAddress;
+
+import ti.paypal.util.*;
 
 // This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
@@ -63,14 +65,28 @@ public class PaymentProxy extends KrollProxy {
 		if (options.containsKeyAndNotNull("intent")) {
 			intent = TiConvert.toInt(options.get("intent"));
 		}
-		
+
 		/* now importing of configuration and/or paymentitems : */
 		if (options.containsKeyAndNotNull("items")) {
-			Object items = options.get("items");
+		    Object paymentItemProxies = options.get("items"); 
+	        List<PaymentItem> paymentItems = new ArrayList<PaymentItem>(); 
+	         
+	        if (!(paymentItemProxies instanceof Object[])) { 
+	            throw new IllegalArgumentException("Invalid argument type `" + paymentItemProxies.getClass().getName() + "` passed to consume()"); 
+	        } 
+	 
+	        for (int i = 0; i < ((Object[]) paymentItemProxies).length; i++) {          
+	            Object paymentItem = ((Object[]) paymentItemProxies)[i]; 
+	            if (!(paymentItem instanceof PaymentItemProxy)) { 
+	                throw new IllegalArgumentException("Invalid argument type `" + paymentItem.getClass().getName() + "` passed to consume()"); 
+	            } 
+	            paymentItems.add(((PaymentItemProxy) paymentItem).getPaymentItem()); 
+	        } 
+			
 
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
-			Object configuration = options.get("configurations");
+			Object paymentConfiguration = options.get("configurations");
 
 		}
 
