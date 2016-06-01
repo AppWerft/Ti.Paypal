@@ -106,7 +106,7 @@ public class PaymentProxy extends KrollProxy {
 									+ configuration.getClass().getName()
 									+ "` passed to consume()");
 				}
-				configuration.add(((ConfigurationProxy) configuration)
+				configurations.add(((ConfigurationProxy) configuration)
 						.getConfiguration());
 			}
 

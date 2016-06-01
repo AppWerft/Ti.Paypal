@@ -29,6 +29,7 @@ public:
 
 private:
 	// Methods -----------------------------------------------------------
+	static v8::Handle<v8::Value> createPaymentItem(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------
 

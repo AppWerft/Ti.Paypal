@@ -85,6 +85,7 @@ Handle<FunctionTemplate> PaymentItemProxy::getProxyTemplate()
 	titanium::ProxyFactory::registerProxyPair(javaClass, *proxyTemplate);
 
 	// Method bindings --------------------------------------------------------
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "createPaymentItem", PaymentItemProxy::createPaymentItem);
 
 	Local<ObjectTemplate> prototypeTemplate = proxyTemplate->PrototypeTemplate();
 	Local<ObjectTemplate> instanceTemplate = proxyTemplate->InstanceTemplate();
@@ -103,6 +104,58 @@ Handle<FunctionTemplate> PaymentItemProxy::getProxyTemplate()
 }
 
 // Methods --------------------------------------------------------------------
+Handle<Value> PaymentItemProxy::createPaymentItem(const Arguments& args)
+{
+	LOGD(TAG, "createPaymentItem()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(PaymentItemProxy::javaClass, "createPaymentItem", "()Lti/paypal/util/PaymentItem;");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'createPaymentItem' with signature '()Lti/paypal/util/PaymentItem;'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	jvalue* jArguments = 0;
+
+	jobject javaProxy = proxy->getJavaObject();
+	jobject jResult = (jobject)env->CallObjectMethodA(javaProxy, methodID, jArguments);
+
+
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
+
+
+	if (env->ExceptionCheck()) {
+		Handle<Value> jsException = titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+		return jsException;
+	}
+
+	if (jResult == NULL) {
+		return Null();
+	}
+
+	Handle<Value> v8Result = titanium::TypeConverter::javaObjectToJsValue(env, jResult);
+
+	env->DeleteLocalRef(jResult);
+
+
+	return v8Result;
+
+}
 
 // Dynamic property accessors -------------------------------------------------
 

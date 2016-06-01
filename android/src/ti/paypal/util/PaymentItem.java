@@ -1,7 +1,7 @@
 package ti.paypal.util;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.common.Log;
+
 import org.appcelerator.titanium.util.TiConvert;
 
 import java.math.BigDecimal;
@@ -34,7 +34,7 @@ public class PaymentItem {
 
 	@Override
 	public String toString() {
-		return "PaymentItem(name:" + name + ")";
+		return "PaymentItem(name:" + name + ", price:" + price + ", sku:" + sku
+				+ ", quantify:" + quantify + ", currency:" + currency + ")";
 	}
-
-}	
+}
