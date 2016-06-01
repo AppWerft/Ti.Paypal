@@ -9,14 +9,14 @@
 package ti.paypal;
 
 import org.appcelerator.kroll.KrollDict;
+
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.util.TiConvert;
 
+import org.appcelerator.titanium.util.TiConvert;
 import ti.paypal.util.PaymentItem;
 import ti.paypal.util.Configuration;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,50 +64,39 @@ public class PaymentProxy extends KrollProxy {
 
 		/* now importing of configuration and/or paymentitems : */
 		if (options.containsKeyAndNotNull("items")) {
-			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
-			if (!(paymentItems instanceof Object)) {
+			Object paymentItemProxies = options.get("items");
+			List<PaymentItem> paymentItems = new ArrayList<PaymentItem>();
+
+			if (!(paymentItemProxies instanceof Object[])) {
 				throw new IllegalArgumentException("Invalid argument type `"
-						+ paymentItems.getClass().getName()
+						+ paymentItemProxies.getClass().getName()
 						+ "` passed to consume()");
 			}
-			List<PayPalItem> paypalItems = new ArrayList<PayPalItem>();
 			/* iterating thru array */
-			for (int i = 0; i < paymentItems.size(); i++) {
-				String name = "", sku = "", currency = "EU";
-				BigDecimal price = new BigDecimal(0);
-				int quantify = 1;
-				KrollDict paymentItem = paymentItems.get(i);
-				if (paymentItem.containsKeyAndNotNull("name")) {
-					name = TiConvert.toString(paymentItem.get("name"));
+			for (int i = 0; i < ((Object[]) paymentItemProxies).length; i++) {
+				Object paymentItem = ((Object[]) paymentItemProxies)[i];
+				if (!(paymentItem instanceof PaymentItemProxy)) {
+					throw new IllegalArgumentException(
+							"Invalid argument type `"
+									+ paymentItem.getClass().getName()
+									+ "` passed to consume()");
 				}
-				if (paymentItem.containsKeyAndNotNull("sku")) {
-					sku = TiConvert.toString(paymentItem.get("sku"));
-				}
-				if (paymentItem.containsKeyAndNotNull("currency")) {
-					currency = TiConvert.toString(paymentItem.get("currency"));
-				}
-				if (paymentItem.containsKeyAndNotNull("quantify")) {
-					quantify = TiConvert.toInt(paymentItem.get("quantify"));
-				}
-				if (paymentItem.containsKeyAndNotNull("price")) {
-					price = new BigDecimal(TiConvert.toString(paymentItem.get("price")));
-				}
-				// name, quant, price, sku, currency
-				paypalItems.add(new PayPalItem(name, quantify, price,
-						sku, currency));
+				paymentItems.add(((PaymentItemProxy) paymentItem)
+						.getPaymentItem());
 			}
+			
+			
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
 			KrollDict configuration = options.getKrollDict("configuration");
-			if (!(configuration instanceof KrollDict)) {
+			if (!(configuration instanceof Object)) {
 				throw new IllegalArgumentException("Invalid argument type `"
 						+ configuration.getClass().getName()
 						+ "` passed to consume()");
 			}
-
+		
 			PayPalConfiguration ppConfiguration = new PayPalConfiguration();
-			ppConfiguration.merchantName(configuration
-					.getString("merchantName"));
+			ppConfiguration.merchantName(configuration.getString("merchantName"));
 		}
 	}
 }
