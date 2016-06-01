@@ -13,9 +13,6 @@ import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.util.TiConvert;
 
-import ti.paypal.util.PaymentItem;
-import ti.paypal.util.Configuration;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
