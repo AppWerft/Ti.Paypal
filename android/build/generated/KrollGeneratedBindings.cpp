@@ -1,5 +1,5 @@
 /* C++ code produced by gperf version 3.0.3 */
-/* Command-line: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf -L C++ -E -t /private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf  */
+/* Command-line: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf -L C++ -E -t /private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf  */
 /* Computed positions: -k'14' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -29,7 +29,7 @@
 #error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
-#line 3 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf"
+#line 3 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf"
 
 
 #include <string.h>
@@ -40,7 +40,7 @@
 #include "ti.paypal.PaymentProxy.h"
 
 
-#line 14 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf"
+#line 14 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf"
 struct titanium::bindings::BindEntry;
 /* maximum key range = 2, duplicates = 0 */
 
@@ -104,9 +104,9 @@ PaypalBindings::lookupGeneratedInit (register const char *str, register unsigned
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""}, {""},
       {""}, {""}, {""}, {""},
-#line 16 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf"
+#line 16 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf"
       {"ti.paypal.PaypalModule", ::ti::paypal::PaypalModule::bindProxy, ::ti::paypal::PaypalModule::dispose},
-#line 17 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf"
+#line 17 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf"
       {"ti.paypal.PaymentProxy", ::ti::paypal::paypal::PaymentProxy::bindProxy, ::ti::paypal::paypal::PaymentProxy::dispose}
     };
 
@@ -124,5 +124,5 @@ PaypalBindings::lookupGeneratedInit (register const char *str, register unsigned
     }
   return 0;
 }
-#line 18 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/paypal-generated/KrollGeneratedBindings.gperf"
+#line 18 "/private/var/folders/25/yvdn9h053sv3htdkzq8558k40000gn/T/fuerst/TiPaypalAndroid-generated/KrollGeneratedBindings.gperf"
 

@@ -1,4 +1,4 @@
-<project name="paypal" default="dist">
+<project name="TiPaypalAndroid" default="dist">
 	<description>
 		Ant build script for Titanium Android module paypal
 	</description>

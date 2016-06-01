@@ -21,21 +21,16 @@ import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
-
 import com.paypal.android.sdk.payments.PayPalItem;
-
 import java.math.BigDecimal;
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
-
-	// Standard Debugging variables
 	private static final String LCAT = "PaypalModule";
-
 	public String clientIdSandbox;
 	public String clientIdProduction;
-	public static String CLIENT_ID;
-
+	public static String clientId;
+	public static int environment;
 	public static String CONFIG_ENVIRONMENT;
 
 	@Kroll.constant
@@ -68,13 +63,13 @@ public class PaypalModule extends KrollModule {
 					.get("clientIdProduction"));
 		}
 		if (args.containsKeyAndNotNull("environment")) {
-			CONFIG_ENVIRONMENT = "" + TiConvert.toInt(args.get("environment"));
+			environment = TiConvert.toInt(args.get("environment"));
 		}
-		if (CONFIG_ENVIRONMENT == "" + ENVIRONMENT_SANDBOX) {
-			CLIENT_ID = "0";
+		if (environment == ENVIRONMENT_SANDBOX) {
+			clientId=clientIdSandbox;
 		}
-		if (CONFIG_ENVIRONMENT == "" + ENVIRONMENT_PRODUCTION) {
-			CLIENT_ID = "1";
+		if (environment ==  ENVIRONMENT_PRODUCTION) {
+			clientId=clientIdProduction;
 		}
 
 	}
@@ -103,10 +98,10 @@ public class PaypalModule extends KrollModule {
 			locale = TiConvert.toString(args.get("locale"));
 		} else
 			Log.d(LCAT, "locale is missing");
-
+        
 		PayPalConfiguration config = new PayPalConfiguration()
 				.environment(PaypalModule.CONFIG_ENVIRONMENT)
-				.clientId(PaypalModule.CLIENT_ID).merchantName(merchantName)
+				.clientId(clientId).merchantName(merchantName)
 				.merchantPrivacyPolicyUri(Uri.parse(merchantPrivacyPolicyURL))
 				.merchantUserAgreementUri(Uri.parse(merchantUserAgreementURL));
 		return config;

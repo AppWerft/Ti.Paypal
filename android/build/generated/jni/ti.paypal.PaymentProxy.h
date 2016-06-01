@@ -30,13 +30,8 @@ public:
 
 private:
 	// Methods -----------------------------------------------------------
-	static v8::Handle<v8::Value> printMessage(const v8::Arguments&);
-	static v8::Handle<v8::Value> getMessage(const v8::Arguments&);
-	static v8::Handle<v8::Value> setMessage(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------
-	static v8::Handle<v8::Value> getter_message(v8::Local<v8::String> property, const v8::AccessorInfo& info);
-	static void setter_message(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 };
 

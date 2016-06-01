@@ -9,6 +9,7 @@
 package ti.paypal;
 
 import org.appcelerator.kroll.KrollDict;
+
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiC;
@@ -21,6 +22,7 @@ import org.appcelerator.titanium.view.TiCompositeLayout.LayoutArrangement;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
+import  java.util.ArrayList;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -39,7 +41,8 @@ import com.paypal.android.sdk.payments.ShippingAddress;
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
-
+	String currencyCode,shortDescription; 
+	int intent;
 
 	// Constructor
 	public PaymentProxy() {
@@ -51,9 +54,21 @@ public class PaymentProxy extends KrollProxy {
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
-
-		if (options.containsKey("message")) {
+		if (options.containsKeyAndNotNull("currencyCode")) {
+			currencyCode = TiConvert.toString(options.get("currencyCode"));
 		}
+		if (options.containsKeyAndNotNull("shortDescription")) {
+			shortDescription = TiConvert.toString(options.get("shortDescription"));
+		}
+		if (options.containsKeyAndNotNull("intent")) {
+			intent = TiConvert.toInt(options.get("intent"));
+		}
+		if (options.containsKeyAndNotNull("items")) {
+			ArrayList<Object> listofPaymentItems; 
+			listofPaymentItems =options.get("items");
+		}
+		
+
 	}
 
 }
