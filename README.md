@@ -106,24 +106,23 @@ Or compact:
 
 var payment = PayPal.createPayment({
 // Required
-    configuration:PayPal.createConfiguration({
+    configuration : {
         merchantName: "John Doe",
         merchantPrivacyPolicyURL: "http://google.com",
         merchantUserAgreementURL: "http://google.com",
         locale: "en" // Any ISO 639-1
-    }),
+    },
     currencyCode: "USD",
     amount: 23.99, // Has to match the amount of your items if you set them
     shortDescription: "Your shopping trip at FooBar",
     intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
-    
-    items: [PayPal.createPaymentItem({
+    items: [{
         name: "My item",
         price: 23.99,
         sku: "my-item",
         quantity: 1,
         currency: "USD" // Any ISO-4217
-    })]
+    })´]
 });
 
 payment.addEventListener("paymentDidCancel", function(e) {
