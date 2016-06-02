@@ -61,12 +61,12 @@ public class PaymentProxy extends KrollProxy {
 	}
 
 	@Override
-	protected void onActivityResults(int requestCode, int resultCode,
+	protected void onActivityResult(int reqCode, int resCode,
 			Intent data) {
 		// error: method does not override or implement a method from a
 		// supertype
-		if (requestCode == REQUEST_CODE_PAYMENT) {
-			if (resultCode == Activity.RESULT_OK) {
+		if (reqCode == REQUEST_CODE_PAYMENT) {
+			if (resCode == Activity.RESULT_OK) {
 				PaymentConfirmation confirm = data
 						.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
 				if (confirm != null) {
@@ -86,16 +86,16 @@ public class PaymentProxy extends KrollProxy {
 								e);
 					}
 				}
-			} else if (resultCode == Activity.RESULT_CANCELED) {
+			} else if (resCode == Activity.RESULT_CANCELED) {
 				if (proxy.hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
 					proxy.fireEvent("paymentDidCancel", event);
 				}
-			} else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+			} else if (resCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
 			}
-		} else if (requestCode == REQUEST_CODE_FUTURE_PAYMENT) {
-			if (resultCode == Activity.RESULT_OK) {
+		} else if (reqCode == REQUEST_CODE_FUTURE_PAYMENT) {
+			if (resCode == Activity.RESULT_OK) {
 				PayPalAuthorization auth = data
 						.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
 				if (auth != null) {
@@ -114,19 +114,19 @@ public class PaymentProxy extends KrollProxy {
 								"an extremely unlikely failure occurred: ", e);
 					}
 				}
-			} else if (resultCode == Activity.RESULT_CANCELED) {
+			} else if (resCode == Activity.RESULT_CANCELED) {
 				Log.i("FuturePaymentExample", "The user canceled.");
 				if (proxy.hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
 					proxy.fireEvent("paymentDidCancel", event);
 				}
-			} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
+			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
 				Log.i("FuturePaymentExample",
 						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
 			}
-		} else if (requestCode == REQUEST_CODE_PROFILE_SHARING) {
-			if (resultCode == Activity.RESULT_OK) {
+		} else if (reqCode == REQUEST_CODE_PROFILE_SHARING) {
+			if (resCode == Activity.RESULT_OK) {
 				PayPalAuthorization auth = data
 						.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
 				if (auth != null) {
@@ -145,14 +145,14 @@ public class PaymentProxy extends KrollProxy {
 								"an extremely unlikely failure occurred: ", e);
 					}
 				}
-			} else if (resultCode == Activity.RESULT_CANCELED) {
+			} else if (resCode == Activity.RESULT_CANCELED) {
 				if (proxy.hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
 					proxy.fireEvent("paymentDidCancel", event);
 				}
 				Log.i("ProfileSharingExample", "The user canceled.");
-			} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
+			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
 				Log.i("ProfileSharingExample",
 						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
 			}
