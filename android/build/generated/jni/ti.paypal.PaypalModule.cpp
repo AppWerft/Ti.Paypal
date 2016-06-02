@@ -92,6 +92,7 @@ Handle<FunctionTemplate> PaypalModule::getProxyTemplate()
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "createConfiguration", PaypalModule::createConfiguration);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "initialize", PaypalModule::initialize);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "createPaymentItem", PaypalModule::createPaymentItem);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "setDebuglevel", PaypalModule::setDebuglevel);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getAllCurrencySigns", PaypalModule::getAllCurrencySigns);
 
 	Local<ObjectTemplate> prototypeTemplate = proxyTemplate->PrototypeTemplate();
@@ -354,6 +355,73 @@ Handle<Value> PaypalModule::createPaymentItem(const Arguments& args)
 
 
 	return v8Result;
+
+}
+Handle<Value> PaypalModule::setDebuglevel(const Arguments& args)
+{
+	LOGD(TAG, "setDebuglevel()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(PaypalModule::javaClass, "setDebuglevel", "(I)V");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'setDebuglevel' with signature '(I)V'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	if (args.Length() < 1) {
+		char errorStringBuffer[100];
+		sprintf(errorStringBuffer, "setDebuglevel: Invalid number of arguments. Expected 1 but got %d", args.Length());
+		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
+	}
+
+	jvalue jArguments[1];
+
+
+
+
+	
+	
+		if ((titanium::V8Util::isNaN(args[0]) && !args[0]->IsUndefined()) || args[0]->ToString()->Length() == 0) {
+			const char *error = "Invalid value, expected type Number.";
+			LOGE(TAG, error);
+			return titanium::JSException::Error(error);
+		}
+	if (!args[0]->IsNull()) {
+		Local<Number> arg_0 = args[0]->ToNumber();
+		jArguments[0].i =
+			titanium::TypeConverter::jsNumberToJavaInt(env, arg_0);
+	} else {
+		jArguments[0].i = NULL;
+	}
+
+	jobject javaProxy = proxy->getJavaObject();
+	env->CallVoidMethodA(javaProxy, methodID, jArguments);
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
+
+
+	if (env->ExceptionCheck()) {
+		titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+	}
+
+
+
+
+	return v8::Undefined();
 
 }
 Handle<Value> PaypalModule::getAllCurrencySigns(const Arguments& args)

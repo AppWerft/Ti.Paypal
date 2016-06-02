@@ -32,6 +32,7 @@ private:
 	static v8::Handle<v8::Value> createConfiguration(const v8::Arguments&);
 	static v8::Handle<v8::Value> initialize(const v8::Arguments&);
 	static v8::Handle<v8::Value> createPaymentItem(const v8::Arguments&);
+	static v8::Handle<v8::Value> setDebuglevel(const v8::Arguments&);
 	static v8::Handle<v8::Value> getAllCurrencySigns(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------

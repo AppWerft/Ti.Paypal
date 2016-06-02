@@ -13,18 +13,21 @@ import java.util.Currency;
 
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.titanium.TiProperties;
-
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
+
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+
 import java.util.ArrayList;
-import android.content.Context;
+
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
 	private static final String LCAT = "PaypalModule";
+	public int debugLevel;
 	public String clientIdSandbox;
 	public String clientIdProduction;
 	public static String clientId;
@@ -66,8 +69,11 @@ public class PaypalModule extends KrollModule {
 		}
 		clientIdSandbox = appProperties.getString("PAYPAL_CLIENT_ID_SANDBOX",
 				"");
-		clientIdProduction = appProperties.getString("PAYPAL_CLIENT_ID_PRODUCTION",
-				"");
+		clientIdProduction = appProperties.getString(
+				"PAYPAL_CLIENT_ID_PRODUCTION", "");
+
+		Log.d(LCAT, "clientIdSandbox after reading of properties="
+				+ clientIdSandbox);
 		if (args != null && args instanceof KrollDict) {
 			if (args.containsKeyAndNotNull("clientIdSandbox")) {
 				clientIdSandbox = TiConvert.toString(args
@@ -81,12 +87,16 @@ public class PaypalModule extends KrollModule {
 				environment = TiConvert.toInt(args.get("environment"));
 			}
 			if (environment == ENVIRONMENT_SANDBOX) {
+				CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_SANDBOX;
 				clientId = clientIdSandbox;
 			}
 			if (environment == ENVIRONMENT_PRODUCTION) {
+				CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_PRODUCTION;
 				clientId = clientIdProduction;
 			}
 		}
+		
+		Log.d(LCAT, "clientId=" + clientId);
 	}
 
 	@Kroll.method
@@ -98,6 +108,11 @@ public class PaypalModule extends KrollModule {
 	@Kroll.method
 	public KrollDict createPaymentItem(KrollDict args) {
 		return args;
+	}
+
+	@Kroll.method
+	public void setDebuglevel(int level) {
+		debugLevel=level;
 	}
 
 	@Kroll.method

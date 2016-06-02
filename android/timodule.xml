@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:module xmlns:ti="http://ti.appcelerator.org" xmlns:android="http://schemas.android.com/apk/res/android">
 	<!--
-		Similar to tiapp.xml, but contains module/platform specific
-		configuration in <iphone>, <android>, and <mobileweb> sections
+	Similar to tiapp.xml, but contains module/platform specific
+	configuration in <iphone>, <android>, and <mobileweb> sections
 	-->
-	<iphone>
-	</iphone>
+	<iphone></iphone>
 	<android xmlns:android="http://schemas.android.com/apk/res/android">
 		<application>
 			<service android:name="com.paypal.android.sdk.payments.PayPalService" android:exported="false"/>
-		<activity android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
-		<activity android:name="com.paypal.android.sdk.payments.LoginActivity"/>
-		<activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
-		<activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
-			</application>
+			<activity android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
+			<activity android:name="com.paypal.android.sdk.payments.LoginActivity"/>
+			<activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
+			<activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
+		</application>
 	</android>
-	<mobileweb>
-	</mobileweb>
+	<mobileweb></mobileweb>
 </ti:module>
