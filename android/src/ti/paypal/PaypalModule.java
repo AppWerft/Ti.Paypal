@@ -8,24 +8,18 @@
  */
 package ti.paypal;
 
-import java.math.BigDecimal;
+
 import java.util.Locale;
-import java.text.NumberFormat;
 import java.util.Currency;
 
 import org.appcelerator.kroll.KrollModule;
-
-import android.net.Uri;
-
-import com.paypal.android.sdk.payments.PayPalConfiguration;
+import org.appcelerator.titanium.TiProperties;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
-import com.paypal.android.sdk.payments.PayPalItem;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
@@ -58,7 +52,10 @@ public class PaypalModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void initialize(KrollDict args) {
+	public void initialize(@Kroll.argument(optional=true) KrollDict args) {
+		
+		if (args != null && args instanceof KrollDict){
+		
 		if (args.containsKeyAndNotNull("clientIdSandbox")) {
 			clientIdSandbox = TiConvert.toString(args.get("clientIdSandbox"));
 		}
@@ -75,7 +72,7 @@ public class PaypalModule extends KrollModule {
 		if (environment == ENVIRONMENT_PRODUCTION) {
 			clientId = clientIdProduction;
 		}
-
+		}
 	}
 
 	@Kroll.method
