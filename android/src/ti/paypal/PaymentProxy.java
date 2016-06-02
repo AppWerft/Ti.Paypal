@@ -16,6 +16,7 @@ import org.appcelerator.titanium.util.TiConvert;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import android.content.Context;
 
 import com.paypal.android.sdk.payments.PayPalItem;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -40,9 +41,10 @@ import ti.paypal.*;
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
 	String currencyCode, shortDescription;
-	int intent;
+	int intentMode;
 	String merchantName, clientId;
 	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
+	List<PayPalItem> paypalItems;
 
 	// Constructor
 	public PaymentProxy() {
@@ -51,13 +53,18 @@ public class PaymentProxy extends KrollProxy {
 
 	@Kroll.method
 	public void show() {
-		Intent intent = new Intent();
-		intent.setClassName("com.paypal.android.sdk.payment",
+		Context context = TiApplication.getInstance().getApplicationContext();
+		
+		PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+		Intent intent = new Intent(context, PaymentActivity.class);
+		intent.setClassName(
+				TiApplication.getInstance().getApplicationContext(),
 				"com.paypal.android.sdk.payments.PaymentActivity");
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, ppConfiguration);
-		Activity activity = TiApplication.getAppRootOrCurrentActivity();
-		activity.startActivity(intent);
+		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+				ppConfiguration);
+		intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+		TiApplication.getAppRootOrCurrentActivity().startActivity(intent);
 	}
 
 	@Override
@@ -71,7 +78,7 @@ public class PaymentProxy extends KrollProxy {
 					.get("shortDescription"));
 		}
 		if (options.containsKeyAndNotNull("intent")) {
-			intent = TiConvert.toInt(options.get("intent"));
+			intentMode = TiConvert.toInt(options.get("intent"));
 		}
 		if (options.containsKeyAndNotNull("items")) {
 			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
@@ -80,7 +87,7 @@ public class PaymentProxy extends KrollProxy {
 						+ paymentItems.getClass().getName()
 						+ "` passed to consume()");
 			}
-			List<PayPalItem> paypalItems = new ArrayList<PayPalItem>();
+			paypalItems = new ArrayList<PayPalItem>();
 			for (int i = 0; i < paymentItems.size(); i++) {
 				String name = "", sku = "", currency = "EU";
 				BigDecimal price = new BigDecimal(0);
@@ -120,5 +127,10 @@ public class PaymentProxy extends KrollProxy {
 			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT)
 					.merchantName(merchantName).clientId(PaypalModule.clientId);
 		}
+	}
+
+	private PayPalPayment getThingToBuy(String paymentIntent) {
+		return new PayPalPayment(new BigDecimal("0.01"), "USD", "sample item",
+				paymentIntent);
 	}
 }

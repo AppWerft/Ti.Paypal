@@ -64,8 +64,10 @@ public class PaypalModule extends KrollModule {
 		if (environmentString.equals("PRODUCTION")) {
 			environment = ENVIRONMENT_PRODUCTION;
 		}
-		clientIdSandbox = appProperties.getString(
-				"PAYPAL_CLIENT_ID_SANDBOX", "");
+		clientIdSandbox = appProperties.getString("PAYPAL_CLIENT_ID_SANDBOX",
+				"");
+		clientIdProduction = appProperties.getString("PAYPAL_CLIENT_ID_PRODUCTION",
+				"");
 		if (args != null && args instanceof KrollDict) {
 			if (args.containsKeyAndNotNull("clientIdSandbox")) {
 				clientIdSandbox = TiConvert.toString(args

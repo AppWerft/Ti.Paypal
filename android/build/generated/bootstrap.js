@@ -25,25 +25,9 @@ function moduleBootstrap(moduleBinding) {
 	}
 
 		addInvocationAPI(module, "Paypal", "Paypal", "createPayment");
-	addInvocationAPI(module, "Paypal", "Paypal", "createConfiguration");
-	addInvocationAPI(module, "Paypal", "Paypal", "createPaymentItem");
 
 			if (!("__propertiesDefined__" in module)) {		
 		Object.defineProperties(module, {
-			"Configuration": {
-				get: function() {
-					var Configuration = lazyGet(this, "ti.paypal.ConfigurationProxy", "Configuration", "Configuration");
-					return Configuration;
-				},
-				configurable: true
-			},
-			"PaymentItem": {
-				get: function() {
-					var PaymentItem = lazyGet(this, "ti.paypal.PaymentItemProxy", "PaymentItem", "PaymentItem");
-					return PaymentItem;
-				},
-				configurable: true
-			},
 			"Payment": {
 				get: function() {
 					var Payment = lazyGet(this, "ti.paypal.PaymentProxy", "Payment", "Payment");
@@ -55,12 +39,6 @@ function moduleBootstrap(moduleBinding) {
 		});
 		module.constructor.prototype.createPayment = function() {
 			return new module.Payment(arguments);
-		}
-		module.constructor.prototype.createConfiguration = function() {
-			return new module.Configuration(arguments);
-		}
-		module.constructor.prototype.createPaymentItem = function() {
-			return new module.PaymentItem(arguments);
 		}
 		}
 		module.__propertiesDefined__ = true;

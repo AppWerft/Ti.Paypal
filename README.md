@@ -29,6 +29,16 @@ Edit the modules section of your `tiapp.xml` file to include this module:
 </modules>
 ```
 
+Add this into your application section of Manifest:
+```xml
+<service android:name="com.paypal.android.sdk.payments.PayPalService" android:exported="false"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.LoginActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
+```
+
+
 Initialize the module by setting the PayPal credentials which you can get from [here](https://developer.paypal.com).
 ```javascript
 var PayPal = require("ti.paypal");
