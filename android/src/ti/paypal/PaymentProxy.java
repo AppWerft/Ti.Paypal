@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import  	org.json.JSONException ;
+import org.json.JSONException;
 
 import com.paypal.android.sdk.payments.PayPalItem;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -41,7 +41,7 @@ import android.app.Activity;
 
 import org.appcelerator.titanium.TiApplication;
 
-import ti.paypal.*;
+
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
@@ -58,11 +58,11 @@ public class PaymentProxy extends KrollProxy {
 	List<PayPalItem> paypalItems;
 
 	// Constructor
-	public PaymentProxy(KrollModule proxy) {
+	public PaymentProxy() {
 		super();
-		this.proxy = proxy;
 	}
 
+	// this method (called by JS level) opens the billing layer:
 	@Kroll.method
 	public void show() {
 		Context context = TiApplication.getInstance().getApplicationContext();
@@ -151,14 +151,15 @@ public class PaymentProxy extends KrollProxy {
 						.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
 				if (confirm != null) {
 					try {
-							if (proxy.hasListeners("paymentDidComplete")) {
-				            KrollDict event = new KrollDict();
-				            event.put("success", true);
-				            event.put("confirm",confirm.toJSONObject().toString(4));
-				            event.put("payment",confirm.getPayment().toJSONObject());
-				            proxy.fireEvent("paymentDidComplete", event);
-				        }
-						
+						if (proxy.hasListeners("paymentDidComplete")) {
+							KrollDict event = new KrollDict();
+							event.put("success", true);
+							event.put("confirm", confirm.toJSONObject()
+									.toString(4));
+							event.put("payment", confirm.getPayment()
+									.toJSONObject());
+							proxy.fireEvent("paymentDidComplete", event);
+						}
 
 					} catch (JSONException e) {
 						Log.e(LCAT, "an extremely unlikely failure occurred: ",
@@ -167,10 +168,10 @@ public class PaymentProxy extends KrollProxy {
 				}
 			} else if (resultCode == Activity.RESULT_CANCELED) {
 				if (proxy.hasListeners("paymentDidCancel")) {
-		            KrollDict event = new KrollDict();
-		            event.put("success", false);
-		            proxy.fireEvent("paymentDidCancel", event);
-		        }
+					KrollDict event = new KrollDict();
+					event.put("success", false);
+					proxy.fireEvent("paymentDidCancel", event);
+				}
 			} else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
 			}
 		} else if (requestCode == REQUEST_CODE_FUTURE_PAYMENT) {
@@ -186,7 +187,7 @@ public class PaymentProxy extends KrollProxy {
 						Log.i("FuturePaymentExample", authorization_code);
 
 						sendAuthorizationToServer(auth);
-						//displayResultText("Future Payment code received from PayPal");
+						// displayResultText("Future Payment code received from PayPal");
 
 					} catch (JSONException e) {
 						Log.e("FuturePaymentExample",
@@ -196,10 +197,10 @@ public class PaymentProxy extends KrollProxy {
 			} else if (resultCode == Activity.RESULT_CANCELED) {
 				Log.i("FuturePaymentExample", "The user canceled.");
 				if (proxy.hasListeners("paymentDidCancel")) {
-		            KrollDict event = new KrollDict();
-		            event.put("success", false);
-		            proxy.fireEvent("paymentDidCancel", event);
-		        }
+					KrollDict event = new KrollDict();
+					event.put("success", false);
+					proxy.fireEvent("paymentDidCancel", event);
+				}
 			} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
 				Log.i("FuturePaymentExample",
 						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
@@ -217,7 +218,7 @@ public class PaymentProxy extends KrollProxy {
 						Log.i("ProfileSharingExample", authorization_code);
 
 						sendAuthorizationToServer(auth);
-					//	displayResultText("Profile Sharing code received from PayPal");
+						// displayResultText("Profile Sharing code received from PayPal");
 
 					} catch (JSONException e) {
 						Log.e("ProfileSharingExample",
@@ -226,18 +227,19 @@ public class PaymentProxy extends KrollProxy {
 				}
 			} else if (resultCode == Activity.RESULT_CANCELED) {
 				if (proxy.hasListeners("paymentDidCancel")) {
-		            KrollDict event = new KrollDict();
-		            event.put("success", false);
-		            proxy.fireEvent("paymentDidCancel", event);
-		        }
+					KrollDict event = new KrollDict();
+					event.put("success", false);
+					proxy.fireEvent("paymentDidCancel", event);
+				}
 				Log.i("ProfileSharingExample", "The user canceled.");
 			} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
 				Log.i("ProfileSharingExample",
 						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
 			}
 		}
-		
+
 	}
+
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
-    }
+	}
 }
