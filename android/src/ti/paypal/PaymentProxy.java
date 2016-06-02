@@ -41,8 +41,6 @@ import android.app.Activity;
 
 import org.appcelerator.titanium.TiApplication;
 
-
-
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
@@ -62,89 +60,11 @@ public class PaymentProxy extends KrollProxy {
 		super();
 	}
 
-	// this method (called by JS level) opens the billing layer:
-	@Kroll.method
-	public void show() {
-		Context context = TiApplication.getInstance().getApplicationContext();
-		PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
-		Intent intent = new Intent(context, PaymentActivity.class);
-		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
-				ppConfiguration);
-		intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
-		TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
-				intent, REQUEST_CODE_PAYMENT);
-	}
-
 	@Override
-	public void handleCreationDict(KrollDict options) {
-		super.handleCreationDict(options);
-		if (options.containsKeyAndNotNull("currencyCode")) {
-			currencyCode = TiConvert.toString(options.get("currencyCode"));
-		}
-		if (options.containsKeyAndNotNull("shortDescription")) {
-			shortDescription = TiConvert.toString(options
-					.get("shortDescription"));
-		}
-		if (options.containsKeyAndNotNull("intent")) {
-			intentMode = TiConvert.toInt(options.get("intent"));
-		}
-		if (options.containsKeyAndNotNull("items")) {
-			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
-			if (!(paymentItems instanceof Object)) {
-				throw new IllegalArgumentException("Invalid argument type `"
-						+ paymentItems.getClass().getName()
-						+ "` passed to consume()");
-			}
-			paypalItems = new ArrayList<PayPalItem>();
-			for (int i = 0; i < paymentItems.size(); i++) {
-				String name = "", sku = "", currency = "EU";
-				BigDecimal price = new BigDecimal(0);
-				int quantify = 1;
-				KrollDict paymentItem = paymentItems.get(i);
-				if (paymentItem.containsKeyAndNotNull("name")) {
-					name = TiConvert.toString(paymentItem.get("name"));
-				}
-				if (paymentItem.containsKeyAndNotNull("sku")) {
-					sku = TiConvert.toString(paymentItem.get("sku"));
-				}
-				if (paymentItem.containsKeyAndNotNull("currency")) {
-					currency = TiConvert.toString(paymentItem.get("currency"));
-				}
-				if (paymentItem.containsKeyAndNotNull("quantify")) {
-					quantify = TiConvert.toInt(paymentItem.get("quantify"));
-				}
-				if (paymentItem.containsKeyAndNotNull("price")) {
-					price = new BigDecimal(TiConvert.toString(paymentItem
-							.get("price")));
-				}
-				paypalItems.add(new PayPalItem(name, quantify, price, sku,
-						currency));
-			}
-		}
-		if (options.containsKeyAndNotNull("configuration")) {
-			KrollDict configurationDict = options.getKrollDict("configuration");
-
-			if (!(configurationDict instanceof KrollDict)) {
-				throw new IllegalArgumentException("Invalid argument type `"
-						+ configurationDict.getClass().getName()
-						+ "` passed to consume()");
-			}
-			if (configurationDict.containsKeyAndNotNull("merchantName")) {
-				merchantName = configurationDict.getString("merchantName");
-			}
-			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT)
-					.merchantName(merchantName).clientId(PaypalModule.clientId);
-			Log.d(LCAT, ppConfiguration.toString());
-		}
-	}
-
-	private PayPalPayment getThingToBuy(String paymentIntent) {
-		return new PayPalPayment(new BigDecimal("0.01"), "USD", "sample item",
-				paymentIntent);
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	protected void onActivityResults(int requestCode, int resultCode,
+			Intent data) {
+		// error: method does not override or implement a method from a
+		// supertype
 		if (requestCode == REQUEST_CODE_PAYMENT) {
 			if (resultCode == Activity.RESULT_OK) {
 				PaymentConfirmation confirm = data
@@ -238,6 +158,87 @@ public class PaymentProxy extends KrollProxy {
 			}
 		}
 
+	}
+
+	// this method (called by JS level) opens the billing layer:
+	@Kroll.method
+	public void show() {
+		Context context = TiApplication.getInstance().getApplicationContext();
+		PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+		Intent intent = new Intent(context, PaymentActivity.class);
+		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+				ppConfiguration);
+		intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+		TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
+				intent, REQUEST_CODE_PAYMENT);
+	}
+
+	@Override
+	public void handleCreationDict(KrollDict options) {
+		super.handleCreationDict(options);
+		if (options.containsKeyAndNotNull("currencyCode")) {
+			currencyCode = TiConvert.toString(options.get("currencyCode"));
+		}
+		if (options.containsKeyAndNotNull("shortDescription")) {
+			shortDescription = TiConvert.toString(options
+					.get("shortDescription"));
+		}
+		if (options.containsKeyAndNotNull("intent")) {
+			intentMode = TiConvert.toInt(options.get("intent"));
+		}
+		if (options.containsKeyAndNotNull("items")) {
+			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
+			if (!(paymentItems instanceof Object)) {
+				throw new IllegalArgumentException("Invalid argument type `"
+						+ paymentItems.getClass().getName()
+						+ "` passed to consume()");
+			}
+			paypalItems = new ArrayList<PayPalItem>();
+			for (int i = 0; i < paymentItems.size(); i++) {
+				String name = "", sku = "", currency = "EU";
+				BigDecimal price = new BigDecimal(0);
+				int quantify = 1;
+				KrollDict paymentItem = paymentItems.get(i);
+				if (paymentItem.containsKeyAndNotNull("name")) {
+					name = TiConvert.toString(paymentItem.get("name"));
+				}
+				if (paymentItem.containsKeyAndNotNull("sku")) {
+					sku = TiConvert.toString(paymentItem.get("sku"));
+				}
+				if (paymentItem.containsKeyAndNotNull("currency")) {
+					currency = TiConvert.toString(paymentItem.get("currency"));
+				}
+				if (paymentItem.containsKeyAndNotNull("quantify")) {
+					quantify = TiConvert.toInt(paymentItem.get("quantify"));
+				}
+				if (paymentItem.containsKeyAndNotNull("price")) {
+					price = new BigDecimal(TiConvert.toString(paymentItem
+							.get("price")));
+				}
+				paypalItems.add(new PayPalItem(name, quantify, price, sku,
+						currency));
+			}
+		}
+		if (options.containsKeyAndNotNull("configuration")) {
+			KrollDict configurationDict = options.getKrollDict("configuration");
+
+			if (!(configurationDict instanceof KrollDict)) {
+				throw new IllegalArgumentException("Invalid argument type `"
+						+ configurationDict.getClass().getName()
+						+ "` passed to consume()");
+			}
+			if (configurationDict.containsKeyAndNotNull("merchantName")) {
+				merchantName = configurationDict.getString("merchantName");
+			}
+			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT)
+					.merchantName(merchantName).clientId(PaypalModule.clientId);
+			Log.d(LCAT, ppConfiguration.toString());
+		}
+	}
+
+	private PayPalPayment getThingToBuy(String paymentIntent) {
+		return new PayPalPayment(new BigDecimal("0.01"), "USD", "sample item",
+				paymentIntent);
 	}
 
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
