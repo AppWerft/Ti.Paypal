@@ -100,6 +100,48 @@ payment.addEventListener("paymentDidComplete", function(e) {
 payment.show();	
 ```
 
+Or compact:
+~~~
+
+
+var payment = PayPal.createPayment({
+// Required
+    configuration:PayPal.createConfiguration({
+        merchantName: "John Doe",
+        merchantPrivacyPolicyURL: "http://google.com",
+        merchantUserAgreementURL: "http://google.com",
+        locale: "en" // Any ISO 639-1
+    }),
+    currencyCode: "USD",
+    amount: 23.99, // Has to match the amount of your items if you set them
+    shortDescription: "Your shopping trip at FooBar",
+    intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
+    
+    items: [PayPal.createPaymentItem({
+        name: "My item",
+        price: 23.99,
+        sku: "my-item",
+        quantity: 1,
+        currency: "USD" // Any ISO-4217
+    })]
+});
+
+payment.addEventListener("paymentDidCancel", function(e) {
+Ti.API.warn("paymentDidCancel");
+});
+
+payment.addEventListener("paymentWillComplete", function(e) {
+Ti.API.warn("paymentWillComplete");
+});
+
+payment.addEventListener("paymentDidComplete", function(e) {
+Ti.API.warn("paymentDidComplete");
+});
+
+payment.show();	
+~~~
+
+
 #### Future Payment
 A future payment is used to ask the buyer for the permission to charge his account later.
 
