@@ -8,7 +8,6 @@
  */
 package ti.paypal;
 
-
 import java.util.Locale;
 import java.util.Currency;
 
@@ -21,6 +20,7 @@ import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 import java.util.ArrayList;
+import android.content.Context;
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
@@ -42,6 +42,8 @@ public class PaypalModule extends KrollModule {
 	@Kroll.constant
 	public static int PAYMENT_INTENT_ORDER = 2;
 
+	private TiProperties appProperties;
+
 	public PaypalModule() {
 		super();
 	}
@@ -52,26 +54,36 @@ public class PaypalModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void initialize(@Kroll.argument(optional=true) KrollDict args) {
-		
-		if (args != null && args instanceof KrollDict){
-		
-		if (args.containsKeyAndNotNull("clientIdSandbox")) {
-			clientIdSandbox = TiConvert.toString(args.get("clientIdSandbox"));
+	public void initialize(@Kroll.argument(optional = true) KrollDict args) {
+		appProperties = TiApplication.getInstance().getAppProperties();
+		String environmentString = appProperties.getString(
+				"PAYPAL_ENVIRONMENT", "SANDBOX");
+		if (environmentString.equals("SANDBOX")) {
+			environment = ENVIRONMENT_SANDBOX;
 		}
-		if (args.containsKeyAndNotNull("clientIdProduction")) {
-			clientIdProduction = TiConvert.toString(args
-					.get("clientIdProduction"));
+		if (environmentString.equals("PRODUCTION")) {
+			environment = ENVIRONMENT_PRODUCTION;
 		}
-		if (args.containsKeyAndNotNull("environment")) {
-			environment = TiConvert.toInt(args.get("environment"));
-		}
-		if (environment == ENVIRONMENT_SANDBOX) {
-			clientId = clientIdSandbox;
-		}
-		if (environment == ENVIRONMENT_PRODUCTION) {
-			clientId = clientIdProduction;
-		}
+		clientIdSandbox = appProperties.getString(
+				"PAYPAL_CLIENT_ID_SANDBOX", "");
+		if (args != null && args instanceof KrollDict) {
+			if (args.containsKeyAndNotNull("clientIdSandbox")) {
+				clientIdSandbox = TiConvert.toString(args
+						.get("clientIdSandbox"));
+			}
+			if (args.containsKeyAndNotNull("clientIdProduction")) {
+				clientIdProduction = TiConvert.toString(args
+						.get("clientIdProduction"));
+			}
+			if (args.containsKeyAndNotNull("environment")) {
+				environment = TiConvert.toInt(args.get("environment"));
+			}
+			if (environment == ENVIRONMENT_SANDBOX) {
+				clientId = clientIdSandbox;
+			}
+			if (environment == ENVIRONMENT_PRODUCTION) {
+				clientId = clientIdProduction;
+			}
 		}
 	}
 

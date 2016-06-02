@@ -236,11 +236,6 @@ Handle<Value> PaypalModule::initialize(const Arguments& args)
 
 	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
 
-	if (args.Length() < 1) {
-		char errorStringBuffer[100];
-		sprintf(errorStringBuffer, "initialize: Invalid number of arguments. Expected 1 but got %d", args.Length());
-		return ThrowException(Exception::Error(String::New(errorStringBuffer)));
-	}
 
 	jvalue jArguments[1];
 
@@ -248,6 +243,10 @@ Handle<Value> PaypalModule::initialize(const Arguments& args)
 
 
 	bool isNew_0;
+	if (args.Length() <= 0) {
+		jArguments[0].l = NULL;
+
+	} else {
 	
 	if (!args[0]->IsNull()) {
 		Local<Value> arg_0 = args[0];
@@ -255,6 +254,7 @@ Handle<Value> PaypalModule::initialize(const Arguments& args)
 			titanium::TypeConverter::jsObjectToJavaKrollDict(env, arg_0, &isNew_0);
 	} else {
 		jArguments[0].l = NULL;
+	}
 	}
 
 	jobject javaProxy = proxy->getJavaObject();
