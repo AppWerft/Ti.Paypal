@@ -1,5 +1,8 @@
 # Ti.PayPal
 
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-170117.png)
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-170314.png)
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-171951.png)
 
 
 
