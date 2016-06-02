@@ -39,6 +39,14 @@ PayPal.initialize({
 });
 ```
 
+Alternativly you can use global properties in tiapp.xml :  PAYPAL_CLIENT_ID_SANDBOX and PAYPAL_CLIENT_ID_PRODUCTION. In this case need only:
+
+~~~
+var PayPal = require("ti.paypal");
+    PayPal.initialize(PayPal.ENVIRONMENT_PRODUCTION);
+});
+~~~
+
 Features
 --------------------------------
 #### Simple Payment

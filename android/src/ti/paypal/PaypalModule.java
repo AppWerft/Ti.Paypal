@@ -9,6 +9,9 @@
 package ti.paypal;
 
 import java.math.BigDecimal;
+import java.util.Locale;
+import java.text.NumberFormat;
+import java.util.Currency;
 
 import org.appcelerator.kroll.KrollModule;
 
@@ -23,6 +26,7 @@ import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 import com.paypal.android.sdk.payments.PayPalItem;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
@@ -73,12 +77,34 @@ public class PaypalModule extends KrollModule {
 		}
 
 	}
+
 	@Kroll.method
 	public KrollDict createConfiguration(KrollDict args) {
 		return args;
-	
+
 	}
+
+	@Kroll.method
 	public KrollDict createPaymentItem(KrollDict args) {
 		return args;
+	}
+
+	@Kroll.method
+	public ArrayList<KrollDict> getAllCurrencySigns() {
+		ArrayList<KrollDict> list = new ArrayList<KrollDict>();
+		Locale[] locales = Locale.getAvailableLocales();
+		for (Locale l : locales) {
+			if (null == l.getCountry() || l.getCountry().isEmpty())
+				continue;
+			Currency c = Currency.getInstance(l);
+			KrollDict item = new KrollDict();
+			item.put("country", l.getCountry());
+			item.put("displayCountry", l.getDisplayCountry());
+			item.put("iso3country", l.getISO3Country());
+			item.put("symbol", c.getSymbol());
+			item.put("displayName", c.getDisplayName());
+			list.add(item);
+		}
+		return list;
 	}
 }

@@ -30,6 +30,7 @@ public:
 
 private:
 	// Methods -----------------------------------------------------------
+	static v8::Handle<v8::Value> show(const v8::Arguments&);
 
 	// Dynamic property accessors ----------------------------------------
 

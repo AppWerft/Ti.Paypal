@@ -17,10 +17,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.paypal.android.sdk.payments.PayPalAuthorization;
-import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalItem;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+
+import com.paypal.android.sdk.payments.PayPalAuthorization;
+import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalPaymentDetails;
@@ -30,21 +31,35 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.paypal.android.sdk.payments.ShippingAddress;
 
-//import ti.paypal.util.*;
+import android.content.Intent;
+import android.app.Activity;
+import org.appcelerator.titanium.TiApplication;
+import ti.paypal.*;
 
-// This proxy can be created by calling Paypal.createExample({message: "hello world"})
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
 	String currencyCode, shortDescription;
 	int intent;
+	String merchantName, clientId;
+	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
 
 	// Constructor
 	public PaymentProxy() {
 		super();
 	}
 
-	// Handle creation options
+	@Kroll.method
+	public void show() {
+		Intent intent = new Intent();
+		intent.setClassName("com.paypal.android.sdk.payment",
+				"com.paypal.android.sdk.payments.PaymentActivity");
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, ppConfiguration);
+		Activity activity = TiApplication.getAppRootOrCurrentActivity();
+		activity.startActivity(intent);
+	}
+
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
@@ -58,8 +73,6 @@ public class PaymentProxy extends KrollProxy {
 		if (options.containsKeyAndNotNull("intent")) {
 			intent = TiConvert.toInt(options.get("intent"));
 		}
-
-		/* now importing of configuration and/or paymentitems : */
 		if (options.containsKeyAndNotNull("items")) {
 			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
 			if (!(paymentItems instanceof Object)) {
@@ -68,7 +81,6 @@ public class PaymentProxy extends KrollProxy {
 						+ "` passed to consume()");
 			}
 			List<PayPalItem> paypalItems = new ArrayList<PayPalItem>();
-			/* iterating thru array */
 			for (int i = 0; i < paymentItems.size(); i++) {
 				String name = "", sku = "", currency = "EU";
 				BigDecimal price = new BigDecimal(0);
@@ -87,24 +99,26 @@ public class PaymentProxy extends KrollProxy {
 					quantify = TiConvert.toInt(paymentItem.get("quantify"));
 				}
 				if (paymentItem.containsKeyAndNotNull("price")) {
-					price = new BigDecimal(TiConvert.toString(paymentItem.get("price")));
+					price = new BigDecimal(TiConvert.toString(paymentItem
+							.get("price")));
 				}
-				// name, quant, price, sku, currency
-				paypalItems.add(new PayPalItem(name, quantify, price,
-						sku, currency));
+				paypalItems.add(new PayPalItem(name, quantify, price, sku,
+						currency));
 			}
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
-			KrollDict configuration = options.getKrollDict("configuration");
-			if (!(configuration instanceof KrollDict)) {
+			KrollDict configurationDict = options.getKrollDict("configuration");
+
+			if (!(configurationDict instanceof KrollDict)) {
 				throw new IllegalArgumentException("Invalid argument type `"
-						+ configuration.getClass().getName()
+						+ configurationDict.getClass().getName()
 						+ "` passed to consume()");
 			}
-
-			PayPalConfiguration ppConfiguration = new PayPalConfiguration();
-			ppConfiguration.merchantName(configuration
-					.getString("merchantName"));
+			if (configurationDict.containsKeyAndNotNull("merchantName")) {
+				merchantName = configurationDict.getString("merchantName");
+			}
+			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT)
+					.merchantName(merchantName).clientId(PaypalModule.clientId);
 		}
 	}
 }

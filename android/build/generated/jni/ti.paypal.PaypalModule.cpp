@@ -94,6 +94,7 @@ Handle<FunctionTemplate> PaypalModule::getProxyTemplate()
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "createConfiguration", PaypalModule::createConfiguration);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "initialize", PaypalModule::initialize);
 	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "createPaymentItem", PaypalModule::createPaymentItem);
+	DEFINE_PROTOTYPE_METHOD(proxyTemplate, "getAllCurrencySigns", PaypalModule::getAllCurrencySigns);
 
 	Local<ObjectTemplate> prototypeTemplate = proxyTemplate->PrototypeTemplate();
 	Local<ObjectTemplate> instanceTemplate = proxyTemplate->InstanceTemplate();
@@ -292,9 +293,9 @@ Handle<Value> PaypalModule::createPaymentItem(const Arguments& args)
 	}
 	static jmethodID methodID = NULL;
 	if (!methodID) {
-		methodID = env->GetMethodID(PaypalModule::javaClass, "createPaymentItem", "(Lorg/appcelerator/kroll/KrollDict;)Lcom/paypal/android/sdk/payments/PayPalItem;");
+		methodID = env->GetMethodID(PaypalModule::javaClass, "createPaymentItem", "(Lorg/appcelerator/kroll/KrollDict;)Lorg/appcelerator/kroll/KrollDict;");
 		if (!methodID) {
-			const char *error = "Couldn't find proxy method 'createPaymentItem' with signature '(Lorg/appcelerator/kroll/KrollDict;)Lcom/paypal/android/sdk/payments/PayPalItem;'";
+			const char *error = "Couldn't find proxy method 'createPaymentItem' with signature '(Lorg/appcelerator/kroll/KrollDict;)Lorg/appcelerator/kroll/KrollDict;'";
 			LOGE(TAG, error);
 				return titanium::JSException::Error(error);
 		}
@@ -337,6 +338,58 @@ Handle<Value> PaypalModule::createPaymentItem(const Arguments& args)
 			if (isNew_0) {
 				env->DeleteLocalRef(jArguments[0].l);
 			}
+
+
+	if (env->ExceptionCheck()) {
+		Handle<Value> jsException = titanium::JSException::fromJavaException();
+		env->ExceptionClear();
+		return jsException;
+	}
+
+	if (jResult == NULL) {
+		return Null();
+	}
+
+	Handle<Value> v8Result = titanium::TypeConverter::javaObjectToJsValue(env, jResult);
+
+	env->DeleteLocalRef(jResult);
+
+
+	return v8Result;
+
+}
+Handle<Value> PaypalModule::getAllCurrencySigns(const Arguments& args)
+{
+	LOGD(TAG, "getAllCurrencySigns()");
+	HandleScope scope;
+
+	JNIEnv *env = titanium::JNIScope::getEnv();
+	if (!env) {
+		return titanium::JSException::GetJNIEnvironmentError();
+	}
+	static jmethodID methodID = NULL;
+	if (!methodID) {
+		methodID = env->GetMethodID(PaypalModule::javaClass, "getAllCurrencySigns", "()Ljava/util/ArrayList<org/appcelerator/kroll/KrollDict>;");
+		if (!methodID) {
+			const char *error = "Couldn't find proxy method 'getAllCurrencySigns' with signature '()Ljava/util/ArrayList<org/appcelerator/kroll/KrollDict>;'";
+			LOGE(TAG, error);
+				return titanium::JSException::Error(error);
+		}
+	}
+
+	titanium::Proxy* proxy = titanium::Proxy::unwrap(args.Holder());
+
+	jvalue* jArguments = 0;
+
+	jobject javaProxy = proxy->getJavaObject();
+	jobject jResult = (jobject)env->CallObjectMethodA(javaProxy, methodID, jArguments);
+
+
+
+	if (!JavaObject::useGlobalRefs) {
+		env->DeleteLocalRef(javaProxy);
+	}
+
 
 
 	if (env->ExceptionCheck()) {
