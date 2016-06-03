@@ -6,7 +6,7 @@
  * Please see the LICENSE included with this distribution for details.
  *
  */
-package ti.paypal;
+package de.appwerft.paypal;
 
 import java.util.Locale;
 import java.util.Currency;
