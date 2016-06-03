@@ -60,11 +60,12 @@ Alternativly can you set the creds at runtime:
 ```javascript
 var PayPal = require("de.appwerft.paypal");
 PayPal.initialize({
-    clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
-    clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
+    clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
+    clientIdProduction: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
 });
 ```
+And you can mix, i.e. Ids in tiapp.xml and the select at runtime.
 
 Features
 --------------------------------
