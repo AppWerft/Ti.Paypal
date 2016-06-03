@@ -1,5 +1,8 @@
 # Ti.PayPal
 
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-170117.png)
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-170314.png)
+![](https://raw.githubusercontent.com/AppWerft/Ti.Paypal/master/documentation/Screenshot_20160602-171951.png)
 
 
 
@@ -25,19 +28,44 @@ Unpack the module and place it inside the `modules/iphone/` folder of your proje
 Edit the modules section of your `tiapp.xml` file to include this module:
 ```xml
 <modules>
-<module platform="android">ti.paypal</module>
+<module platform="android">de.appwerft.paypal</module>
 </modules>
 ```
 
-Initialize the module by setting the PayPal credentials which you can get from [here](https://developer.paypal.com).
-```javascript
+Add this into your application section of Manifest:
+```xml
+<service android:name="com.paypal.android.sdk.payments.PayPalService" android:exported="false"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.LoginActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
+<activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
+```
+
+Optionally you can modify the theming (suppressing/coloring actionbar and/or navigationbar)
+
+If you have only one instance of PayPal billing in you app, the you can put the PayPal credentials into tiapp.xml:
+
+~~~
+<property name="PAYPAL_CLIENT_ID_SANDBOX" type="string">AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2</property>
+<property name="PAYPAL_CLIENT_ID_PRODUCTION" type="string">FQG0****************</property>
+<property name="PAYPAL_ENVIRONMENT" type="string">PRODUCTION</property>
+~~~
+
+In this case you can simple instantiate with:
+~~~
 var PayPal = require("ti.paypal");
+~~~
+
+Alternativly can you set the creds at runtime: 
+```javascript
+var PayPal = require("de.appwerft.paypal");
 PayPal.initialize({
-    clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
-    clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
+    clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
+    clientIdProduction: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
 });
 ```
+And you can mix, i.e. Ids in tiapp.xml and the select at runtime.
 
 Features
 --------------------------------
@@ -77,9 +105,6 @@ payment.addEventListener("paymentDidCancel", function(e) {
     Ti.API.warn("paymentDidCancel");
 });
 
-payment.addEventListener("paymentWillComplete", function(e) {
-    Ti.API.warn("paymentWillComplete");
-});
 
 payment.addEventListener("paymentDidComplete", function(e) {
     Ti.API.warn("paymentDidComplete");
@@ -88,31 +113,68 @@ payment.addEventListener("paymentDidComplete", function(e) {
 payment.show();	
 ```
 
+Or compact:
+~~~
+
+
+var payment = PayPal.createPayment({
+// Required
+    configuration : {
+        merchantName: "John Doe",
+        merchantPrivacyPolicyURL: "http://google.com",
+        merchantUserAgreementURL: "http://google.com",
+        locale: "en" // Any ISO 639-1
+    },
+    currencyCode: "USD",
+    amount: 23.99, // Has to match the amount of your items if you set them
+    shortDescription: "Your shopping trip at FooBar",
+    intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
+    items: [{
+        name: "My item",
+        price: 23.99,
+        sku: "my-item",
+        quantity: 1,
+        currency: "USD" // Any ISO-4217
+    })´]
+});
+
+payment.addEventListener("paymentDidCancel", function(e) {
+Ti.API.warn("paymentDidCancel");
+});
+
+payment.addEventListener("paymentDidComplete", function(e) {
+Ti.API.warn("paymentDidComplete");
+});
+
+payment.show();	
+~~~
+
+
 #### Future Payment
 A future payment is used to ask the buyer for the permission to charge his account later.
 
-```javascript
-var configuration = PayPal.createConfiguration({
-    merchantName: "John Doe",
-    merchantPrivacyPolicyURL: "http://google.com",
-    merchantUserAgreementURL: "http://google.com",
-    locale: "en"
-});
+```javascript;
 
-var payment = PayPal.createFuturePayment({
-configuration: configuration
+var payment = PayPal.createPayment({
+    configuration: {
+        merchantName: "John Doe",
+        merchantPrivacyPolicyURL: "http://google.com",
+        merchantUserAgreementURL: "http://google.com",
+        locale: "en"
+    },
+    futurePayment : true
 });
 
 payment.addEventListener("futurePaymentDidCancel", function(e) {
-Ti.API.warn("futurePaymentDidCancel");
+    Ti.API.warn("futurePaymentDidCancel");
 });
 
 payment.addEventListener("futurePaymentWillComplete", function(e) {
-Ti.API.warn("futurePaymentWillComplete");
+    Ti.API.warn("futurePaymentWillComplete");
 });
 
 payment.addEventListener("futurePaymentDidComplete", function(e) {
-Ti.API.warn("futurePaymentDidComplete");
+    Ti.API.warn("futurePaymentDidComplete");
 });
 
 payment.show();	

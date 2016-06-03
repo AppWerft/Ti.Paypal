@@ -24,7 +24,7 @@ Download + Setup
 ---------------
 
 ### Setup
-Unpack the module and place it inside the `modules/iphone/` folder of your project.
+Unpack the module and place it inside the `modules/android/` folder of your project.
 Edit the modules section of your `tiapp.xml` file to include this module:
 ```xml
 <modules>
@@ -98,7 +98,9 @@ var payment = PayPal.createPayment({
     intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
 
     // Optional, you can also just specify the amount
-    items: [item1]
+    items: [item1],
+    shipping : 10.0
+    tax : 123,10
 });
 
 payment.addEventListener("paymentDidCancel", function(e) {
@@ -130,12 +132,14 @@ var payment = PayPal.createPayment({
     shortDescription: "Your shopping trip at FooBar",
     intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
     items: [{
-        name: "My item",
-        price: 23.99,
-        sku: "my-item",
+        name: "Titanium workshop",
+        price: 900.00,
+        sku: "12345",
         quantity: 1,
-        currency: "USD" // Any ISO-4217
-    })´]
+        currency: "EUR"     
+    }],
+    shipping : 10.0
+    tax : 123,10
 });
 
 payment.addEventListener("paymentDidCancel", function(e) {
