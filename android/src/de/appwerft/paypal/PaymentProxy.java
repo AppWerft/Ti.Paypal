@@ -275,6 +275,7 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 				price = new BigDecimal(TiConvert.toString(paymentItem
 						.get("price")));
 			}
+			items[i] = new PayPalItem(name, quantify, price, currency, sku);
 
 		}
 		BigDecimal subtotal = PayPalItem.getItemTotal(items);
@@ -286,7 +287,7 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 		PayPalPayment payment = new PayPalPayment(amount, this.currencyCode,
 				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
-		// payment.custom("");
+		payment.custom("This is text that will be associated with the payment that the app can use.");
 		return payment;
 	}
 
