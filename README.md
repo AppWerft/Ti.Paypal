@@ -28,7 +28,7 @@ Unpack the module and place it inside the `modules/iphone/` folder of your proje
 Edit the modules section of your `tiapp.xml` file to include this module:
 ```xml
 <modules>
-<module platform="android">ti.paypal</module>
+<module platform="android">de.appwerft.paypal</module>
 </modules>
 ```
 
@@ -41,18 +41,9 @@ Add this into your application section of Manifest:
 <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
 ```
 
+Optionally you can modify the theming (suppressing/coloring actionbar and/or navigationbar)
 
-Initialize the module by setting the PayPal credentials which you can get from [here](https://developer.paypal.com).
-```javascript
-var PayPal = require("ti.paypal");
-PayPal.initialize({
-    clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
-    clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
-    environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
-});
-```
-
-Alternativly you can use global properties in tiapp.xml:  
+If you have only one instance of PayPal billing in you app, the you can put the PayPal credentials into tiapp.xml:
 
 ~~~
 <property name="PAYPAL_CLIENT_ID_SANDBOX" type="string">AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2</property>
@@ -60,10 +51,20 @@ Alternativly you can use global properties in tiapp.xml:
 <property name="PAYPAL_ENVIRONMENT" type="string">PRODUCTION</property>
 ~~~
 
-With this setting you can renounce the initaulisation:
+In this case you can simple instantiate with:
 ~~~
 var PayPal = require("ti.paypal");
 ~~~
+
+Alternativly can you set the creds at runtime: 
+```javascript
+var PayPal = require("de.appwerft.paypal");
+PayPal.initialize({
+    clientIdSandbox: "<YOUR_CLIENT_ID_SANDBOX>",
+    clientIdProduction: "<YOUR_CLIENT_ID_PRODUCTION>",
+    environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
+});
+```
 
 Features
 --------------------------------

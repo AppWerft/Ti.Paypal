@@ -23,8 +23,7 @@ import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import java.util.ArrayList;
 
-
-@Kroll.module(name = "Paypal", id = "ti.paypal")
+@Kroll.module(name = "Paypal", id = "de.appwerft.paypal")
 public class PaypalModule extends KrollModule {
 	private static final String LCAT = "PaypalModule";
 	public int debugLevel;
@@ -39,11 +38,11 @@ public class PaypalModule extends KrollModule {
 	@Kroll.constant
 	public static final int ENVIRONMENT_PRODUCTION = 1;
 	@Kroll.constant
-	public static int PAYMENT_INTENT_SALE = 0;
+	public static final int PAYMENT_INTENT_SALE = 0;
 	@Kroll.constant
-	public static int PAYMENT_INTENT_AUTHORIZE = 1;
+	public static final int PAYMENT_INTENT_AUTHORIZE = 1;
 	@Kroll.constant
-	public static int PAYMENT_INTENT_ORDER = 2;
+	public static final int PAYMENT_INTENT_ORDER = 2;
 
 	private TiProperties appProperties;
 
@@ -70,10 +69,10 @@ public class PaypalModule extends KrollModule {
 		Log.d(LCAT, "clientIdSandbox after reading of properties="
 				+ clientIdSandbox);
 	}
-	
+
 	@Kroll.onAppCreate
 	public void onAppCreate(TiApplication app) {
-		
+
 	}
 
 	@Kroll.method
@@ -99,7 +98,7 @@ public class PaypalModule extends KrollModule {
 				clientId = clientIdProduction;
 			}
 		}
-		
+
 		Log.d(LCAT, "clientId=" + clientId);
 	}
 
@@ -116,7 +115,7 @@ public class PaypalModule extends KrollModule {
 
 	@Kroll.method
 	public void setDebuglevel(int level) {
-		debugLevel=level;
+		debugLevel = level;
 	}
 
 	@Kroll.method

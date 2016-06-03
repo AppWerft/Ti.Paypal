@@ -8,51 +8,47 @@
  */
 package ti.paypal;
 
-import org.appcelerator.kroll.KrollDict;
-import android.os.Handler.Callback ;
-import org.appcelerator.kroll.KrollModule;
-
-import org.appcelerator.kroll.KrollProxy;
-import org.appcelerator.kroll.KrollProxySupport;
-
-import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.kroll.common.Log;
-import org.appcelerator.titanium.util.TiConvert;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
+import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollModule;
+import org.appcelerator.kroll.KrollProxy;
+import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiLifecycle.OnActivityResultEvent;
+import org.appcelerator.titanium.util.TiConvert;
 import org.json.JSONException;
 
-import com.paypal.android.sdk.payments.PayPalItem;
-import com.paypal.android.sdk.payments.PayPalConfiguration;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+
 import com.paypal.android.sdk.payments.PayPalAuthorization;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
+import com.paypal.android.sdk.payments.PayPalItem;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalPaymentDetails;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
-import com.paypal.android.sdk.payments.ShippingAddress;
 
-import android.content.Intent;
-import android.app.Activity;
-
-import org.appcelerator.titanium.TiApplication;
+// examle : http://stackoverflow.com/questions/7631841/how-integrate-paypal-in-android-application
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
-public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollProxySupport{
+public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	// Standard Debugging variables
 	private static final String LCAT = "PaymentProxy";
-	String currencyCode, shortDescription,merchantName, clientId;
+	String currencyCode, shortDescription, merchantName, clientId;
 	int intentMode;
+	boolean futurePayment = false;
 	KrollModule proxy;
 	private static final int REQUEST_CODE_PAYMENT = 1,
-			REQUEST_CODE_FUTURE_PAYMENT = 2, REQUEST_CODE_PROFILE_SHARING = 3;
+			REQUEST_CODE_FUTUREPAYMENT = 2, REQUEST_CODE_PROFILESHARING = 3;
 	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
 	List<PayPalItem> paypalItems;
 
@@ -61,10 +57,11 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 	}
 
 	@Override
-	protected void onActivityResult(int reqCode, int resCode, Intent data) {
+	public void onActivityResult(Activity act, int REQUEST_CODE, int resCode,
+			Intent data) {
 		// error: method does not override or implement a method from a
 		// supertype
-		if (reqCode == REQUEST_CODE_PAYMENT) {
+		if (REQUEST_CODE == REQUEST_CODE_PAYMENT) {
 			if (resCode == Activity.RESULT_OK) {
 				PaymentConfirmation confirm = data
 						.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
@@ -93,7 +90,7 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 				}
 			} else if (resCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
 			}
-		} else if (reqCode == REQUEST_CODE_FUTURE_PAYMENT) {
+		} else if (REQUEST_CODE == REQUEST_CODE_FUTUREPAYMENT) {
 			if (resCode == Activity.RESULT_OK) {
 				PayPalAuthorization auth = data
 						.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
@@ -124,7 +121,7 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 				Log.i("FuturePaymentExample",
 						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
 			}
-		} else if (reqCode == REQUEST_CODE_PROFILE_SHARING) {
+		} else if (REQUEST_CODE == REQUEST_CODE_PROFILESHARING) {
 			if (resCode == Activity.RESULT_OK) {
 				PayPalAuthorization auth = data
 						.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
@@ -159,17 +156,38 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 
 	}
 
-	// this method (called by JS level) opens the billing layer:
+	/*
+	 * this method (called by JS level) opens the billing layer
+	 */
 	@Kroll.method
 	public void show() {
 		Context context = TiApplication.getInstance().getApplicationContext();
-		PayPalPayment thingToBuy = getThingToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
 		Intent intent = new Intent(context, PaymentActivity.class);
-		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
-				ppConfiguration);
-		intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
-		TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
-				intent, REQUEST_CODE_PAYMENT);
+		if (futurePayment == false) {
+			PayPalPayment thingToBuy = null;
+			if (intentMode == PaypalModule.PAYMENT_INTENT_SALE) {
+				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+			} else if (intentMode == PaypalModule.PAYMENT_INTENT_AUTHORIZE) {
+				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_AUTHORIZE);
+			} else if (intentMode == PaypalModule.PAYMENT_INTENT_ORDER) {
+				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_ORDER);
+			}
+
+			/* putting configuration */
+			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+					ppConfiguration);
+			/* putting payload */
+			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+			/* start the overlay */
+			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
+					intent, REQUEST_CODE_PAYMENT);
+		} else {
+			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+					ppConfiguration);
+			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
+					intent, REQUEST_CODE_FUTUREPAYMENT);
+		}
+
 	}
 
 	@Override
@@ -185,6 +203,10 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 		if (options.containsKeyAndNotNull("intent")) {
 			intentMode = TiConvert.toInt(options.get("intent"));
 		}
+		if (options.containsKeyAndNotNull("futurePayment")) {
+			futurePayment = TiConvert.toBoolean(options.get("futurePayment"));
+		}
+
 		if (options.containsKeyAndNotNull("items")) {
 			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
 			if (!(paymentItems instanceof Object)) {
@@ -240,6 +262,33 @@ public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollP
 				paymentIntent);
 	}
 
+	private PayPalPayment getStuffToBuy(String paymentIntent) {
+		// --- include an item list, payment amount details
+		PayPalItem[] items = {
+				new PayPalItem("sample item #1", 2, new BigDecimal("87.50"),
+						"USD", "sku-12345678"),
+				new PayPalItem("free sample item #2", 1,
+						new BigDecimal("0.00"), "USD", "sku-zero-price"),
+				new PayPalItem("sample item #3 with a longer name", 6,
+						new BigDecimal("37.99"), "USD", "sku-33333") };
+		BigDecimal subtotal = PayPalItem.getItemTotal(items);
+		BigDecimal shipping = new BigDecimal("7.21");
+		BigDecimal tax = new BigDecimal("4.67");
+		PayPalPaymentDetails paymentDetails = new PayPalPaymentDetails(
+				shipping, subtotal, tax);
+		BigDecimal amount = subtotal.add(shipping).add(tax);
+		PayPalPayment payment = new PayPalPayment(amount, "USD", "sample item",
+				paymentIntent);
+		payment.items(items).paymentDetails(paymentDetails);
+
+		// --- set other optional fields like invoice_number, custom field, and
+		// soft_descriptor
+		payment.custom("This is text that will be associated with the payment that the app can use.");
+
+		return payment;
+	}
+
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
 	}
+
 }
