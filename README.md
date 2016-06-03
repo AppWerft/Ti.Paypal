@@ -103,9 +103,6 @@ payment.addEventListener("paymentDidCancel", function(e) {
     Ti.API.warn("paymentDidCancel");
 });
 
-payment.addEventListener("paymentWillComplete", function(e) {
-    Ti.API.warn("paymentWillComplete");
-});
 
 payment.addEventListener("paymentDidComplete", function(e) {
     Ti.API.warn("paymentDidComplete");
@@ -141,10 +138,6 @@ var payment = PayPal.createPayment({
 
 payment.addEventListener("paymentDidCancel", function(e) {
 Ti.API.warn("paymentDidCancel");
-});
-
-payment.addEventListener("paymentWillComplete", function(e) {
-Ti.API.warn("paymentWillComplete");
 });
 
 payment.addEventListener("paymentDidComplete", function(e) {

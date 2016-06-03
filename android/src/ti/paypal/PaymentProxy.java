@@ -9,9 +9,12 @@
 package ti.paypal;
 
 import org.appcelerator.kroll.KrollDict;
+import android.os.Handler.Callback ;
 import org.appcelerator.kroll.KrollModule;
 
 import org.appcelerator.kroll.KrollProxy;
+import org.appcelerator.kroll.KrollProxySupport;
+
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.util.TiConvert;
@@ -42,27 +45,23 @@ import android.app.Activity;
 import org.appcelerator.titanium.TiApplication;
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
-public class PaymentProxy extends KrollProxy {
+public class PaymentProxy extends KrollProxy implements Handler.Callback, KrollProxySupport{
 	// Standard Debugging variables
 	private static final String LCAT = "PaymentProxy";
-	String currencyCode, shortDescription;
+	String currencyCode, shortDescription,merchantName, clientId;
 	int intentMode;
 	KrollModule proxy;
-	String merchantName, clientId;
-	private static final int REQUEST_CODE_PAYMENT = 1;
-	private static final int REQUEST_CODE_FUTURE_PAYMENT = 2;
-	private static final int REQUEST_CODE_PROFILE_SHARING = 3;
+	private static final int REQUEST_CODE_PAYMENT = 1,
+			REQUEST_CODE_FUTURE_PAYMENT = 2, REQUEST_CODE_PROFILE_SHARING = 3;
 	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
 	List<PayPalItem> paypalItems;
 
-	// Constructor
 	public PaymentProxy() {
 		super();
 	}
 
 	@Override
-	protected void onActivityResult(int reqCode, int resCode,
-			Intent data) {
+	protected void onActivityResult(int reqCode, int resCode, Intent data) {
 		// error: method does not override or implement a method from a
 		// supertype
 		if (reqCode == REQUEST_CODE_PAYMENT) {
