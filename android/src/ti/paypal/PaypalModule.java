@@ -49,15 +49,10 @@ public class PaypalModule extends KrollModule {
 
 	public PaypalModule() {
 		super();
+		importXML();
 	}
 
-	@Kroll.onAppCreate
-	public static void onAppCreate(TiApplication app) {
-		Log.d(LCAT, "inside onAppCreate");
-	}
-
-	@Kroll.method
-	public void initialize(@Kroll.argument(optional = true) KrollDict args) {
+	private void importXML() {
 		appProperties = TiApplication.getInstance().getAppProperties();
 		String environmentString = appProperties.getString(
 				"PAYPAL_ENVIRONMENT", "SANDBOX");
@@ -74,6 +69,15 @@ public class PaypalModule extends KrollModule {
 
 		Log.d(LCAT, "clientIdSandbox after reading of properties="
 				+ clientIdSandbox);
+	}
+	
+	@Kroll.onAppCreate
+	public void onAppCreate(TiApplication app) {
+		
+	}
+
+	@Kroll.method
+	public void initialize(@Kroll.argument(optional = true) KrollDict args) {
 		if (args != null && args instanceof KrollDict) {
 			if (args.containsKeyAndNotNull("clientIdSandbox")) {
 				clientIdSandbox = TiConvert.toString(args

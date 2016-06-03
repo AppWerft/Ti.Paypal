@@ -52,16 +52,17 @@ PayPal.initialize({
 });
 ```
 
-Alternativly you can use global properties in tiapp.xml :  PAYPAL_CLIENT_ID_SANDBOX and PAYPAL_CLIENT_ID_PRODUCTION. In this case need only:
-For ENVIRONMENT you can set:
-~~~
-Ti.App.Properties.setString("PAYPAL_ENVIRONMENT","PRODUCTION"); // or "SANDBOX"
-~~~
+Alternativly you can use global properties in tiapp.xml:  
 
 ~~~
+<property name="PAYPAL_CLIENT_ID_SANDBOX" type="string">AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2</property>
+<property name="PAYPAL_CLIENT_ID_PRODUCTION" type="string">FQG0****************</property>
+<property name="PAYPAL_ENVIRONMENT" type="string">PRODUCTION</property>
+~~~
+
+With this setting you can renounce the initaulisation:
+~~~
 var PayPal = require("ti.paypal");
-    PayPal.initialize();
-});
 ~~~
 
 Features
@@ -157,28 +158,28 @@ payment.show();
 #### Future Payment
 A future payment is used to ask the buyer for the permission to charge his account later.
 
-```javascript
-var configuration = PayPal.createConfiguration({
-    merchantName: "John Doe",
-    merchantPrivacyPolicyURL: "http://google.com",
-    merchantUserAgreementURL: "http://google.com",
-    locale: "en"
-});
+```javascript;
 
-var payment = PayPal.createFuturePayment({
-configuration: configuration
+var payment = PayPal.createPayment({
+    configuration: {
+        merchantName: "John Doe",
+        merchantPrivacyPolicyURL: "http://google.com",
+        merchantUserAgreementURL: "http://google.com",
+        locale: "en"
+    },
+    futurePayment : true
 });
 
 payment.addEventListener("futurePaymentDidCancel", function(e) {
-Ti.API.warn("futurePaymentDidCancel");
+    Ti.API.warn("futurePaymentDidCancel");
 });
 
 payment.addEventListener("futurePaymentWillComplete", function(e) {
-Ti.API.warn("futurePaymentWillComplete");
+    Ti.API.warn("futurePaymentWillComplete");
 });
 
 payment.addEventListener("futurePaymentDidComplete", function(e) {
-Ti.API.warn("futurePaymentDidComplete");
+    Ti.API.warn("futurePaymentDidComplete");
 });
 
 payment.show();	
