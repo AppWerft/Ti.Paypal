@@ -46,11 +46,12 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	String currencyCode, shortDescription, merchantName, clientId;
 	int intentMode;
 	boolean futurePayment = false;
-	KrollModule proxy;
+	BigDecimal amount, shipping, tax;
+	KrollModule proxy; // for event firing
 	private static final int REQUEST_CODE_PAYMENT = 1,
 			REQUEST_CODE_FUTUREPAYMENT = 2, REQUEST_CODE_PROFILESHARING = 3;
 	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
-	List<PayPalItem> paypalItems;
+	List<KrollDict> paymentItems = null;
 
 	public PaymentProxy() {
 		super();
@@ -164,20 +165,20 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 		Context context = TiApplication.getInstance().getApplicationContext();
 		Intent intent = new Intent(context, PaymentActivity.class);
 		if (futurePayment == false) {
-			PayPalPayment thingToBuy = null;
+			PayPalPayment thingsToBuy = null;
 			if (intentMode == PaypalModule.PAYMENT_INTENT_SALE) {
-				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
+				thingsToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
 			} else if (intentMode == PaypalModule.PAYMENT_INTENT_AUTHORIZE) {
-				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_AUTHORIZE);
+				thingsToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_AUTHORIZE);
 			} else if (intentMode == PaypalModule.PAYMENT_INTENT_ORDER) {
-				thingToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_ORDER);
+				thingsToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_ORDER);
 			}
 
 			/* putting configuration */
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					ppConfiguration);
 			/* putting payload */
-			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingToBuy);
+			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingsToBuy);
 			/* start the overlay */
 			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
 					intent, REQUEST_CODE_PAYMENT);
@@ -190,55 +191,44 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleCreationDict(KrollDict options) {
 		super.handleCreationDict(options);
-		if (options.containsKeyAndNotNull("currencyCode")) {
-			currencyCode = TiConvert.toString(options.get("currencyCode"));
-		}
-		if (options.containsKeyAndNotNull("shortDescription")) {
-			shortDescription = TiConvert.toString(options
-					.get("shortDescription"));
-		}
 		if (options.containsKeyAndNotNull("intent")) {
-			intentMode = TiConvert.toInt(options.get("intent"));
+			this.intentMode = TiConvert.toInt(options.get("intent"));
 		}
 		if (options.containsKeyAndNotNull("futurePayment")) {
-			futurePayment = TiConvert.toBoolean(options.get("futurePayment"));
+			this.futurePayment = TiConvert.toBoolean(options
+					.get("futurePayment"));
 		}
-
+		if (options.containsKeyAndNotNull("currencyCode")) {
+			this.currencyCode = TiConvert.toString(options.get("currencyCode"));
+		}
+		if (options.containsKeyAndNotNull("shortDescription")) {
+			this.shortDescription = TiConvert.toString(options
+					.get("shortDescription"));
+		}
+		if (options.containsKeyAndNotNull("amount")) {
+			this.amount = new BigDecimal(TiConvert.toString(options
+					.get("amount")));
+		}
+		if (options.containsKeyAndNotNull("tax")) {
+			this.tax = new BigDecimal(TiConvert.toString(options.get("tax")));
+		}
+		if (options.containsKeyAndNotNull("shipping")) {
+			this.shipping = new BigDecimal(TiConvert.toString(options
+					.get("shipping")));
+		}
 		if (options.containsKeyAndNotNull("items")) {
 			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
+			this.paymentItems = (ArrayList<KrollDict>) options.get("items");
 			if (!(paymentItems instanceof Object)) {
 				throw new IllegalArgumentException("Invalid argument type `"
 						+ paymentItems.getClass().getName()
 						+ "` passed to consume()");
 			}
-			paypalItems = new ArrayList<PayPalItem>();
-			for (int i = 0; i < paymentItems.size(); i++) {
-				String name = "", sku = "", currency = "EU";
-				BigDecimal price = new BigDecimal(0);
-				int quantify = 1;
-				KrollDict paymentItem = paymentItems.get(i);
-				if (paymentItem.containsKeyAndNotNull("name")) {
-					name = TiConvert.toString(paymentItem.get("name"));
-				}
-				if (paymentItem.containsKeyAndNotNull("sku")) {
-					sku = TiConvert.toString(paymentItem.get("sku"));
-				}
-				if (paymentItem.containsKeyAndNotNull("currency")) {
-					currency = TiConvert.toString(paymentItem.get("currency"));
-				}
-				if (paymentItem.containsKeyAndNotNull("quantify")) {
-					quantify = TiConvert.toInt(paymentItem.get("quantify"));
-				}
-				if (paymentItem.containsKeyAndNotNull("price")) {
-					price = new BigDecimal(TiConvert.toString(paymentItem
-							.get("price")));
-				}
-				paypalItems.add(new PayPalItem(name, quantify, price, sku,
-						currency));
-			}
+
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
 			KrollDict configurationDict = options.getKrollDict("configuration");
@@ -257,34 +247,46 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 		}
 	}
 
-	private PayPalPayment getThingToBuy(String paymentIntent) {
-		return new PayPalPayment(new BigDecimal("0.01"), "USD", "sample item",
-				paymentIntent);
-	}
-
 	private PayPalPayment getStuffToBuy(String paymentIntent) {
-		// --- include an item list, payment amount details
-		PayPalItem[] items = {
-				new PayPalItem("sample item #1", 2, new BigDecimal("87.50"),
-						"USD", "sku-12345678"),
-				new PayPalItem("free sample item #2", 1,
-						new BigDecimal("0.00"), "USD", "sku-zero-price"),
-				new PayPalItem("sample item #3 with a longer name", 6,
-						new BigDecimal("37.99"), "USD", "sku-33333") };
+		if (paymentItems == null) {
+			return new PayPalPayment(amount, currencyCode, shortDescription,
+					paymentIntent);
+		}
+		/* iterating thrue all items from KrollDict: */
+		PayPalItem[] items = new PayPalItem[this.paymentItems.size()];
+		for (int i = 0; i < this.paymentItems.size(); i++) {
+			String name = "", sku = "", currency = "EU";
+			BigDecimal price = new BigDecimal(0);
+			int quantify = 1;
+			KrollDict paymentItem = paymentItems.get(i);
+			if (paymentItem.containsKeyAndNotNull("name")) {
+				name = TiConvert.toString(paymentItem.get("name"));
+			}
+			if (paymentItem.containsKeyAndNotNull("sku")) {
+				sku = TiConvert.toString(paymentItem.get("sku"));
+			}
+			if (paymentItem.containsKeyAndNotNull("currency")) {
+				currency = TiConvert.toString(paymentItem.get("currency"));
+			}
+			if (paymentItem.containsKeyAndNotNull("quantify")) {
+				quantify = TiConvert.toInt(paymentItem.get("quantify"));
+			}
+			if (paymentItem.containsKeyAndNotNull("price")) {
+				price = new BigDecimal(TiConvert.toString(paymentItem
+						.get("price")));
+			}
+
+		}
 		BigDecimal subtotal = PayPalItem.getItemTotal(items);
-		BigDecimal shipping = new BigDecimal("7.21");
-		BigDecimal tax = new BigDecimal("4.67");
+		BigDecimal shipping = this.shipping;
+		BigDecimal tax = this.tax;
 		PayPalPaymentDetails paymentDetails = new PayPalPaymentDetails(
 				shipping, subtotal, tax);
 		BigDecimal amount = subtotal.add(shipping).add(tax);
-		PayPalPayment payment = new PayPalPayment(amount, "USD", "sample item",
-				paymentIntent);
+		PayPalPayment payment = new PayPalPayment(amount, this.currencyCode,
+				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
-
-		// --- set other optional fields like invoice_number, custom field, and
-		// soft_descriptor
-		payment.custom("This is text that will be associated with the payment that the app can use.");
-
+		// payment.custom("");
 		return payment;
 	}
 
