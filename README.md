@@ -13,7 +13,7 @@ Ti.PayPal is an open-source project to support the PayPal Android-SDK 2.x in App
 - [x] Future Payments
 - [x] Merchant Configuration
 
-Attention: is still under work!
+Attention: is still under work!  This interface und README is a copy of Hans's Ti.PayPal for iOS.'
 
 Requirements
 ---------------
