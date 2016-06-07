@@ -9,6 +9,8 @@
 package de.appwerft.paypal;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -43,7 +46,10 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	// Standard Debugging variables
 	private static final String LCAT = "PaymentProxy";
-	String currencyCode, shortDescription, merchantName, clientId;
+	String currencyCode;
+	String shortDescription;
+
+	String clientId;
 	int intentMode;
 	boolean futurePayment = false;
 	BigDecimal amount, shipping, tax;
@@ -232,17 +238,32 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
 			KrollDict configurationDict = options.getKrollDict("configuration");
-
 			if (!(configurationDict instanceof KrollDict)) {
 				throw new IllegalArgumentException("Invalid argument type `"
 						+ configurationDict.getClass().getName()
 						+ "` passed to consume()");
 			}
+			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT);
 			if (configurationDict.containsKeyAndNotNull("merchantName")) {
-				merchantName = configurationDict.getString("merchantName");
+				ppConfiguration.merchantName(configurationDict
+						.getString("merchantName"));
 			}
-			ppConfiguration.environment(PaypalModule.CONFIG_ENVIRONMENT)
-					.merchantName(merchantName).clientId(PaypalModule.clientId);
+			if (configurationDict
+					.containsKeyAndNotNull("merchantPrivacyPolicyURL")) {
+				try {
+					ppConfiguration.merchantPrivacyPolicyUri(Uri
+							.parse(configurationDict
+									.getString("merchantPrivacyPolicyURL")));
+				} catch (NullPointerException e) {
+				}
+				try {
+					ppConfiguration.merchantUserAgreementUri(Uri
+							.parse(configurationDict
+									.getString("merchantUserAgreementURL")));
+				} catch (NullPointerException e) {
+				}
+			}
+			ppConfiguration.clientId(PaypalModule.clientId);
 			Log.d(LCAT, ppConfiguration.toString());
 		}
 	}
