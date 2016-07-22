@@ -76,31 +76,28 @@ A simple payment is used for do instant payments with items you define. Watch th
 
 ```javascript
 
-var item1 = PayPal.createPaymentItem({
-    name: "My item",
-    price: 23.99,
-    sku: "my-item",
-    quantity: 1,
-    currency: "USD" // Any ISO-4217
-});
-
-var configuration = PayPal.createConfiguration({
-    merchantName: "John Doe",
-    merchantPrivacyPolicyURL: "http://google.com",
-    merchantUserAgreementURL: "http://google.com",
-    locale: "en" // Any ISO 639-1
-});
 
 var payment = PayPal.createPayment({
     // Required
-    configuration: configuration,
+    configuration: {
+        merchantName: "John Doe",
+        merchantPrivacyPolicyURL: "http://google.com",
+        merchantUserAgreementURL: "http://google.com",
+        locale: "en" // Any ISO 639-1
+    },
     currencyCode: "USD",
     amount: 23.99, // Has to match the amount of your items if you set them
     shortDescription: "Your shopping trip at FooBar",
     intent: PayPal.PAYMENT_INTENT_SALE, // or: PAYMENT_INTENT_AUTHORIZE, PAYMENT_INTENT_ORDER
 
     // Optional, you can also just specify the amount
-    items: [item1],
+    items: [{
+        name: "My item",
+        price: 23.99,
+        sku: "my-item",
+        quantity: 1,
+        currency: "USD" // Any ISO-4217
+    }],
     shipping : 10.0
     tax : 123,10
 });
