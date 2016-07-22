@@ -9,10 +9,9 @@
 package de.appwerft.paypal;
 
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
@@ -27,6 +26,7 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+
 import android.net.Uri;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
@@ -68,6 +68,8 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			Intent data) {
 		// error: method does not override or implement a method from a
 		// supertype
+		Log.d(LCAT, ">>>>>>>>>>  Answer from PayPal: REQUEST_CODE="
+				+ REQUEST_CODE + "   resCode=" + resCode);
 		if (REQUEST_CODE == REQUEST_CODE_PAYMENT) {
 			if (resCode == Activity.RESULT_OK) {
 				PaymentConfirmation confirm = data
@@ -226,15 +228,23 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			this.shipping = new BigDecimal(TiConvert.toString(options
 					.get("shipping")));
 		}
+		Log.d(LCAT, options.toString());
 		if (options.containsKeyAndNotNull("items")) {
-			List<KrollDict> paymentItems = new ArrayList<KrollDict>();
-			this.paymentItems = (ArrayList<KrollDict>) options.get("items");
-			if (!(paymentItems instanceof Object)) {
-				throw new IllegalArgumentException("Invalid argument type `"
-						+ paymentItems.getClass().getName()
-						+ "` passed to consume()");
+			Log.d(LCAT, "importing of items");
+			List<Map<String, String>> paymentItems = new ArrayList<Map<String, String>>();
+			Object items = options.get("items");
+			if (!(items.getClass().isArray())) {
+				throw new IllegalArgumentException("items must be an array");
 			}
+			Object[] itemArray = (Object[]) items;
+			Log.d(LCAT, "is Object[]");
+			for (int i = 0; i < itemArray.length; i++) {
+				Log.d(LCAT, "" + i);
+				Map<String, String> item = (Map<String, String>) itemArray[i];
 
+				paymentItems.add(item);
+			}
+			Log.d(LCAT, "items imported");
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
 			KrollDict configurationDict = options.getKrollDict("configuration");
