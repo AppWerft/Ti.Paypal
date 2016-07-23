@@ -45,12 +45,13 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	// Standard Debugging variables
-	private static final String LCAT = "PaymentProxy";
+	private static final String LCAT = "PayPalProxy";
 	String currencyCode;
 	String shortDescription;
 
 	String clientId;
 	int intentMode;
+	int debug;
 	boolean futurePayment = false;
 	BigDecimal amount, shipping, tax;
 	KrollModule proxy; // for event firing
@@ -61,6 +62,14 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 
 	public PaymentProxy() {
 		super();
+		debug = PaypalModule.debug;
+
+	}
+
+	private void log(String msg) {
+		if (this.debug > 1) {
+			Log.d(LCAT, ">>>>>>>>>>>>" + msg);
+		}
 	}
 
 	@Override
@@ -68,34 +77,42 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			Intent data) {
 		// error: method does not override or implement a method from a
 		// supertype
-		Log.d(LCAT, ">>>>>>>>>>  Answer from PayPal: REQUEST_CODE="
-				+ REQUEST_CODE + "   resCode=" + resCode);
+		log("if you see this on console, then the paypal server has anwsered");
+		log(" Answer from PayPal: REQUEST_CODE=" + REQUEST_CODE + "   resCode="
+				+ resCode);
 		if (REQUEST_CODE == REQUEST_CODE_PAYMENT) {
+			log("REQUEST_CODE_PAYMENT");
 			if (resCode == Activity.RESULT_OK) {
+				log("RESULT_OK");
 				PaymentConfirmation confirm = data
 						.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
 				if (confirm != null) {
+					log("RESULT_CONFIRMATION");
 					try {
-						if (proxy.hasListeners("paymentDidComplete")) {
+						if (hasListeners("paymentDidComplete")) {
+							log("paymentDidComplete");
 							KrollDict event = new KrollDict();
 							event.put("success", true);
 							event.put("confirm", confirm.toJSONObject()
 									.toString(4));
 							event.put("payment", confirm.getPayment()
 									.toJSONObject());
-							proxy.fireEvent("paymentDidComplete", event);
+							log(event.toString());
+							fireEvent("paymentDidComplete", event);
 						}
-
 					} catch (JSONException e) {
 						Log.e(LCAT, "an extremely unlikely failure occurred: ",
 								e);
 					}
+				} else {
+					log("no RESULT_CONFIRMATION");
 				}
 			} else if (resCode == Activity.RESULT_CANCELED) {
-				if (proxy.hasListeners("paymentDidCancel")) {
+				if (hasListeners("paymentDidCancel")) {
+					log("paymentDidCancel");
 					KrollDict event = new KrollDict();
 					event.put("success", false);
-					proxy.fireEvent("paymentDidCancel", event);
+					fireEvent("paymentDidCancel", event);
 				}
 			} else if (resCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
 			}
@@ -121,10 +138,10 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 				}
 			} else if (resCode == Activity.RESULT_CANCELED) {
 				Log.i("FuturePaymentExample", "The user canceled.");
-				if (proxy.hasListeners("paymentDidCancel")) {
+				if (hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
-					proxy.fireEvent("paymentDidCancel", event);
+					fireEvent("paymentDidCancel", event);
 				}
 			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
 				Log.i("FuturePaymentExample",
@@ -151,10 +168,10 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 					}
 				}
 			} else if (resCode == Activity.RESULT_CANCELED) {
-				if (proxy.hasListeners("paymentDidCancel")) {
+				if (hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
-					proxy.fireEvent("paymentDidCancel", event);
+					fireEvent("paymentDidCancel", event);
 				}
 				Log.i("ProfileSharingExample", "The user canceled.");
 			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
@@ -171,8 +188,15 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	@Kroll.method
 	public void show() {
 		Context context = TiApplication.getInstance().getApplicationContext();
+		Intent serviceintent = new Intent(context, PayPalService.class);
+		serviceintent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+				ppConfiguration);
+		context.startService(serviceintent);
 		Intent intent = new Intent(context, PaymentActivity.class);
+		log("start opening paypal billing layer");
 		if (futurePayment == false) {
+			log("standard payment (no futurePayment) with intentMode="
+					+ intentMode);
 			PayPalPayment thingsToBuy = null;
 			if (intentMode == PaypalModule.PAYMENT_INTENT_SALE) {
 				thingsToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_SALE);
@@ -190,6 +214,7 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			/* start the overlay */
 			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
 					intent, REQUEST_CODE_PAYMENT);
+			log("paypal billing layer started");
 		} else {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					ppConfiguration);
@@ -202,6 +227,7 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handleCreationDict(KrollDict options) {
+		log("start importing payement details");
 		super.handleCreationDict(options);
 		if (options.containsKeyAndNotNull("intent")) {
 			this.intentMode = TiConvert.toInt(options.get("intent"));
@@ -228,23 +254,20 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			this.shipping = new BigDecimal(TiConvert.toString(options
 					.get("shipping")));
 		}
-		Log.d(LCAT, options.toString());
+		log(options.toString());
 		if (options.containsKeyAndNotNull("items")) {
-			Log.d(LCAT, "importing of items");
+			log("importing of items");
 			List<Map<String, String>> paymentItems = new ArrayList<Map<String, String>>();
 			Object items = options.get("items");
 			if (!(items.getClass().isArray())) {
 				throw new IllegalArgumentException("items must be an array");
 			}
 			Object[] itemArray = (Object[]) items;
-			Log.d(LCAT, "is Object[]");
 			for (int i = 0; i < itemArray.length; i++) {
-				Log.d(LCAT, "" + i);
 				Map<String, String> item = (Map<String, String>) itemArray[i];
-
 				paymentItems.add(item);
 			}
-			Log.d(LCAT, "items imported");
+			log("items imported");
 		}
 		if (options.containsKeyAndNotNull("configuration")) {
 			KrollDict configurationDict = options.getKrollDict("configuration");
@@ -274,11 +297,14 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 				}
 			}
 			ppConfiguration.clientId(PaypalModule.clientId);
-			Log.d(LCAT, ppConfiguration.toString());
+			log(ppConfiguration.toString());
+			log("PaypalModule.clientId" + PaypalModule.clientId);
 		}
+
 	}
 
 	private PayPalPayment getStuffToBuy(String paymentIntent) {
+		log("getStuffToBuy started");
 		if (paymentItems == null) {
 			return new PayPalPayment(amount, currencyCode, shortDescription,
 					paymentIntent);

@@ -33,6 +33,8 @@ public class PaypalModule extends KrollModule {
 	public static int environment;
 	public static String CONFIG_ENVIRONMENT;
 
+	public static int debug = 0;
+
 	@Kroll.constant
 	public static final int ENVIRONMENT_SANDBOX = 0;
 	@Kroll.constant
@@ -65,9 +67,6 @@ public class PaypalModule extends KrollModule {
 				"");
 		clientIdProduction = appProperties.getString(
 				"PAYPAL_CLIENT_ID_PRODUCTION", "");
-
-		Log.d(LCAT, "clientIdSandbox after reading of properties="
-				+ clientIdSandbox);
 		if (args != null && args instanceof KrollDict) {
 			if (args.containsKeyAndNotNull("clientIdSandbox")) {
 				clientIdSandbox = TiConvert.toString(args
@@ -89,8 +88,7 @@ public class PaypalModule extends KrollModule {
 				clientId = clientIdProduction;
 			}
 		}
-
-		Log.d(LCAT, "clientId=" + clientId);
+		Log.d(LCAT, ">>>>>>>> clientId=" + clientId);
 	}
 
 	@Kroll.method
@@ -105,8 +103,8 @@ public class PaypalModule extends KrollModule {
 	}
 
 	@Kroll.method
-	public void setDebuglevel(int level) {
-		debugLevel = level;
+	public void setDebug(int level) {
+		debug = level;
 	}
 
 	@Kroll.method
