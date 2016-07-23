@@ -103,13 +103,13 @@ public class PaypalModule extends KrollModule {
 		Log.d(LCAT, ">>>>>>>> clientId=" + clientId);
 		Context context = TiApplication.getInstance().getApplicationContext();
 		/* starting paypal service */
-		ppConfiguration = new PayPalConfiguration().environment(
-				CONFIG_ENVIRONMENT).clientId(clientId);
+		ppConfiguration = new PayPalConfiguration()
+				.environment(CONFIG_ENVIRONMENT).clientId(clientId)
+				.languageOrLocale("en");
 		Intent intent = new Intent(context, PayPalService.class);
 		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 				ppConfiguration);
 		context.startService(intent);
-
 	}
 
 	@Kroll.method

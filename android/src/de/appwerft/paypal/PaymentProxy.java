@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
@@ -26,7 +25,6 @@ import org.json.JSONException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
 import android.net.Uri;
 
 import com.paypal.android.sdk.payments.PayPalAuthorization;
@@ -35,7 +33,6 @@ import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalItem;
 import com.paypal.android.sdk.payments.PayPalPayment;
 import com.paypal.android.sdk.payments.PayPalPaymentDetails;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
@@ -46,15 +43,10 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	// Standard Debugging variables
 	private static final String LCAT = "PayPalProxy";
-	String currencyCode;
-	String shortDescription;
-
-	String clientId;
-	int intentMode;
-	int debug;
+	String currencyCode, shortDescription, clientId;
+	int intentMode, debug;
 	boolean futurePayment = false;
 	BigDecimal amount, shipping, tax;
-	KrollModule proxy; // for event firing
 	private static final int REQUEST_CODE_PAYMENT = 1,
 			REQUEST_CODE_FUTUREPAYMENT = 2, REQUEST_CODE_PROFILESHARING = 3;
 	PayPalConfiguration ppConfiguration = new PayPalConfiguration();
@@ -73,10 +65,8 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	}
 
 	@Override
-	public void onActivityResult(Activity act, int REQUEST_CODE, int resCode,
+	public void onActivityResult(Activity dummy, int REQUEST_CODE, int resCode,
 			Intent data) {
-		// error: method does not override or implement a method from a
-		// supertype
 		log("if you see this on console, then the paypal server has anwsered");
 		log(" Answer from PayPal: REQUEST_CODE=" + REQUEST_CODE + "   resCode="
 				+ resCode);
@@ -122,64 +112,25 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 						.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
 				if (auth != null) {
 					try {
-						Log.i("FuturePaymentExample", auth.toJSONObject()
-								.toString(4));
-
+						log(auth.toJSONObject().toString(4));
 						String authorization_code = auth.getAuthorizationCode();
-						Log.i("FuturePaymentExample", authorization_code);
-
+						log(authorization_code);
 						sendAuthorizationToServer(auth);
-						// displayResultText("Future Payment code received from PayPal");
-
 					} catch (JSONException e) {
-						Log.e("FuturePaymentExample",
-								"an extremely unlikely failure occurred: ", e);
+						log("an extremely unlikely failure occurred: " + e);
 					}
 				}
 			} else if (resCode == Activity.RESULT_CANCELED) {
-				Log.i("FuturePaymentExample", "The user canceled.");
+				log("The user canceled.");
 				if (hasListeners("paymentDidCancel")) {
 					KrollDict event = new KrollDict();
 					event.put("success", false);
 					fireEvent("paymentDidCancel", event);
 				}
 			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
-				Log.i("FuturePaymentExample",
-						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
-			}
-		} else if (REQUEST_CODE == REQUEST_CODE_PROFILESHARING) {
-			if (resCode == Activity.RESULT_OK) {
-				PayPalAuthorization auth = data
-						.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
-				if (auth != null) {
-					try {
-						Log.i("ProfileSharingExample", auth.toJSONObject()
-								.toString(4));
-
-						String authorization_code = auth.getAuthorizationCode();
-						Log.i("ProfileSharingExample", authorization_code);
-
-						sendAuthorizationToServer(auth);
-						// displayResultText("Profile Sharing code received from PayPal");
-
-					} catch (JSONException e) {
-						Log.e("ProfileSharingExample",
-								"an extremely unlikely failure occurred: ", e);
-					}
-				}
-			} else if (resCode == Activity.RESULT_CANCELED) {
-				if (hasListeners("paymentDidCancel")) {
-					KrollDict event = new KrollDict();
-					event.put("success", false);
-					fireEvent("paymentDidCancel", event);
-				}
-				Log.i("ProfileSharingExample", "The user canceled.");
-			} else if (resCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
-				Log.i("ProfileSharingExample",
-						"Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
+				log("Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
 			}
 		}
-
 	}
 
 	/*
