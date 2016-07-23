@@ -187,13 +187,15 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 	 */
 	@Kroll.method
 	public void show() {
+		this.showPaymentOverLay();
+	}
+
+	@Kroll.method
+	public void showPaymentOverLay() {
 		Context context = TiApplication.getInstance().getApplicationContext();
-		Intent serviceintent = new Intent(context, PayPalService.class);
-		serviceintent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
-				ppConfiguration);
-		context.startService(serviceintent);
 		Intent intent = new Intent(context, PaymentActivity.class);
 		log("start opening paypal billing layer");
+		Activity myactivity = TiApplication.getAppRootOrCurrentActivity();
 		if (futurePayment == false) {
 			log("standard payment (no futurePayment) with intentMode="
 					+ intentMode);
@@ -205,21 +207,18 @@ public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
 			} else if (intentMode == PaypalModule.PAYMENT_INTENT_ORDER) {
 				thingsToBuy = getStuffToBuy(PayPalPayment.PAYMENT_INTENT_ORDER);
 			}
-
-			/* putting configuration */
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
-					ppConfiguration);
+					PaypalModule.ppConfiguration);
 			/* putting payload */
 			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingsToBuy);
 			/* start the overlay */
-			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
-					intent, REQUEST_CODE_PAYMENT);
+			myactivity.startActivityForResult(intent, REQUEST_CODE_PAYMENT);
 			log("paypal billing layer started");
 		} else {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					ppConfiguration);
-			TiApplication.getAppRootOrCurrentActivity().startActivityForResult(
-					intent, REQUEST_CODE_FUTUREPAYMENT);
+			myactivity.startActivityForResult(intent,
+					REQUEST_CODE_FUTUREPAYMENT);
 		}
 
 	}

@@ -19,7 +19,12 @@ import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
 
 import java.util.ArrayList;
 
@@ -34,6 +39,8 @@ public class PaypalModule extends KrollModule {
 	public static String CONFIG_ENVIRONMENT;
 
 	public static int debug = 0;
+
+	public static PayPalConfiguration ppConfiguration;
 
 	@Kroll.constant
 	public static final int ENVIRONMENT_SANDBOX = 0;
@@ -54,6 +61,11 @@ public class PaypalModule extends KrollModule {
 
 	@Kroll.method
 	public void initialize(@Kroll.argument(optional = true) KrollDict args) {
+		this.initPayment(args);
+	}
+
+	@Kroll.method
+	public void initPayment(@Kroll.argument(optional = true) KrollDict args) {
 		appProperties = TiApplication.getInstance().getAppProperties();
 		String environmentString = appProperties.getString(
 				"PAYPAL_ENVIRONMENT", "SANDBOX");
@@ -89,6 +101,15 @@ public class PaypalModule extends KrollModule {
 			}
 		}
 		Log.d(LCAT, ">>>>>>>> clientId=" + clientId);
+		Context context = TiApplication.getInstance().getApplicationContext();
+		/* starting paypal service */
+		ppConfiguration = new PayPalConfiguration().environment(
+				CONFIG_ENVIRONMENT).clientId(clientId);
+		Intent intent = new Intent(context, PayPalService.class);
+		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+				ppConfiguration);
+		context.startService(intent);
+
 	}
 
 	@Kroll.method

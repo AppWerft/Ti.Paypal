@@ -61,7 +61,7 @@ var PayPal = require("ti.paypal");
 Alternativly can you set the creds at runtime: 
 ```javascript
 var PayPal = require("de.appwerft.paypal");
-PayPal.initialize({
+PayPal.initPayment({
     clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     clientIdProduction: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
@@ -111,7 +111,7 @@ payment.addEventListener("paymentDidComplete", function(e) {
     Ti.API.warn("paymentDidComplete");
 });
 
-payment.show();	
+payment.showPaymentOverLay();	
 ```
 
 Or compact:
@@ -149,7 +149,7 @@ payment.addEventListener("paymentDidComplete", function(e) {
 Ti.API.warn("paymentDidComplete");
 });
 
-payment.show();	
+payment.showPaymentOverlay();	
 ~~~
 
 
