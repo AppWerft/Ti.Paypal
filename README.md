@@ -77,14 +77,18 @@ A simple payment is used for do instant payments with items you define. Watch th
 ```javascript
 
 
+var configuration = PayPal.createConfiguration( {
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en" // Any ISO 639-1
+    },
+);
+
+
 var payment = PayPal.createPayment({
     // Required
-    configuration: {
-        merchantName: "John Doe",
-        merchantPrivacyPolicyURL: "http://google.com",
-        merchantUserAgreementURL: "http://google.com",
-        locale: "en" // Any ISO 639-1
-    },
+    configuration: configuration,
     currencyCode: "USD",
     amount: 23.99, // Has to match the amount of your items if you set them
     shortDescription: "Your shopping trip at FooBar",

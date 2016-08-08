@@ -28,6 +28,8 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 
 import java.util.ArrayList;
 
+// alternativ: https://github.com/luis1987/PayPalAppcelerator/blob/master/android/src/com/bea/paypal/ModulopaypalModule.java
+
 @Kroll.module(name = "Paypal", id = "de.appwerft.paypal")
 public class PaypalModule extends KrollModule {
 	private static final String LCAT = "PaypalModule";
