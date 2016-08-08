@@ -14,12 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.appcelerator.kroll.KrollDict;
-import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.TiLifecycle.OnActivityResultEvent;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
 import org.appcelerator.titanium.util.TiActivitySupport;
 import org.appcelerator.titanium.util.TiConvert;
@@ -48,7 +46,6 @@ public class PaymentProxy extends KrollProxy {
 	private static final String LCAT = "PayPalProxy";
 	String currencyCode, shortDescription, clientId;
 	int intentMode, debug;
-	TiActivityResultHandler responseHandler;
 	boolean futurePayment = false;
 	BigDecimal amount, shipping, tax;
 	public static final int REQUEST_CODE_PAYMENT = 1,
@@ -77,7 +74,7 @@ public class PaymentProxy extends KrollProxy {
 		// Activity a = TiApplication.getAppRootOrCurrentActivity();
 		Intent intent = new Intent(context, PaymentActivity.class);
 		log("start opening paypal billing layer");
-		TiActivitySupport support = (TiActivitySupport) activity;
+
 		if (futurePayment == false) {
 			log("standard payment (no futurePayment) with intentMode="
 					+ intentMode);
@@ -95,15 +92,93 @@ public class PaymentProxy extends KrollProxy {
 					PaypalModule.ppConfiguration);
 			/* putting payload */
 			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingsToBuy);
-			/* start the overlay */
-			// a.startActivityForResult(intent, REQUEST_CODE_PAYMENT);
-			// log("paypal billing layer started");
 		} else {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					PaypalModule.ppConfiguration);
 		}
-		support.launchActivityForResult(intent, REQUEST_CODE_PAYMENT,
-				new PayPalResultHandler());
+		TiActivitySupport activitySupport = (TiActivitySupport) TiApplication
+				.getInstance().getCurrentActivity();
+		activitySupport.launchActivityForResult(intent, REQUEST_CODE_PAYMENT,
+				new TiActivityResultHandler() {
+					public void onError(Activity arg0, int arg1, Exception arg2) {
+
+					}
+
+					public void onResult(Activity dummy, int requestCode,
+							int resultCode, Intent data) {
+
+						log("if you see this on console, then the paypal server has anwsered");
+						log(" Answer from PayPal: REQUEST_CODE=" + requestCode
+								+ "   resultCode=" + resultCode);
+						if (requestCode == PaymentProxy.REQUEST_CODE_PAYMENT) {
+							log("REQUEST_CODE_PAYMENT");
+							if (resultCode == Activity.RESULT_OK) {
+								log("RESULT_OK");
+								PaymentConfirmation confirm = data
+										.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+								if (confirm != null) {
+									log("RESULT_CONFIRMATION");
+									try {
+										if (hasListeners("paymentDidComplete")) {
+											log("paymentDidComplete");
+											KrollDict event = new KrollDict();
+											event.put("success", true);
+											event.put("confirm", confirm
+													.toJSONObject().toString(4));
+											event.put("payment", confirm
+													.getPayment()
+													.toJSONObject());
+											log(event.toString());
+											fireEvent("paymentDidComplete",
+													event);
+										}
+									} catch (JSONException e) {
+										Log.e(LCAT,
+												"an extremely unlikely failure occurred: ",
+												e);
+									}
+								} else {
+									log("no RESULT_CONFIRMATION");
+								}
+							} else if (resultCode == Activity.RESULT_CANCELED) {
+								if (hasListeners("paymentDidCancel")) {
+									log("paymentDidCancel");
+									KrollDict event = new KrollDict();
+									event.put("success", false);
+									fireEvent("paymentDidCancel", event);
+								}
+							} else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+							}
+						} else if (requestCode == REQUEST_CODE_FUTUREPAYMENT) {
+							if (resultCode == Activity.RESULT_OK) {
+								PayPalAuthorization auth = data
+										.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
+								if (auth != null) {
+									try {
+										log(auth.toJSONObject().toString(4));
+										String authorization_code = auth
+												.getAuthorizationCode();
+										log(authorization_code);
+										// sendAuthorizationToServer(auth);
+									} catch (JSONException e) {
+										log("an extremely unlikely failure occurred: "
+												+ e);
+									}
+								}
+							} else if (resultCode == Activity.RESULT_CANCELED) {
+								log("The user canceled.");
+								/*
+								 * if (hasListeners("paymentDidCancel")) {
+								 * KrollDict event = new KrollDict();
+								 * event.put("success", false);
+								 * fireEvent("paymentDidCancel", event); }
+								 */
+							} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
+								log("Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
+							}
+						}
+					}
+				});
 
 	}
 
@@ -233,103 +308,6 @@ public class PaymentProxy extends KrollProxy {
 	}
 
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
-	}
-
-	/* class for handling results from PayPal overlay: */
-	public class PayPalResultHandler implements TiActivityResultHandler,
-			Runnable {
-
-		protected int code;
-		private static final String LCAT = "PayPalProxy";
-		protected KrollFunction successCallback, cancelCallback, errorCallback;
-		protected TiActivitySupport activitySupport;
-		protected Intent barcodeIntent;
-
-		private void log(String msg) {
-
-			Log.d(LCAT, ">>>>>>>>>>>>" + msg);
-
-		}
-
-		public void run() {
-			code = activitySupport.getUniqueResultCode();
-			activitySupport.launchActivityForResult(barcodeIntent, code, this);
-		}
-
-		public void onError(Activity activity, int requestCode, Exception e) {
-
-		}
-
-		public void onResult(Activity activity, int requestCode,
-				int resultCode, Intent data) {
-			log("if you see this on console, then the paypal server has anwsered");
-			log(" Answer from PayPal: REQUEST_CODE=" + requestCode
-					+ "   resultCode=" + resultCode);
-			if (requestCode == PaymentProxy.REQUEST_CODE_PAYMENT) {
-				log("REQUEST_CODE_PAYMENT");
-				if (resultCode == Activity.RESULT_OK) {
-					log("RESULT_OK");
-					PaymentConfirmation confirm = data
-							.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-					if (confirm != null) {
-						log("RESULT_CONFIRMATION");
-						try {
-							if (hasListeners("paymentDidComplete")) {
-								log("paymentDidComplete");
-								KrollDict event = new KrollDict();
-								event.put("success", true);
-								event.put("confirm", confirm.toJSONObject()
-										.toString(4));
-								event.put("payment", confirm.getPayment()
-										.toJSONObject());
-								log(event.toString());
-								fireEvent("paymentDidComplete", event);
-							}
-						} catch (JSONException e) {
-							Log.e(LCAT,
-									"an extremely unlikely failure occurred: ",
-									e);
-						}
-					} else {
-						log("no RESULT_CONFIRMATION");
-					}
-				} else if (resultCode == Activity.RESULT_CANCELED) {
-					if (hasListeners("paymentDidCancel")) {
-						log("paymentDidCancel");
-						KrollDict event = new KrollDict();
-						event.put("success", false);
-						fireEvent("paymentDidCancel", event);
-					}
-				} else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
-				}
-			} else if (requestCode == REQUEST_CODE_FUTUREPAYMENT) {
-				if (resultCode == Activity.RESULT_OK) {
-					PayPalAuthorization auth = data
-							.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
-					if (auth != null) {
-						try {
-							log(auth.toJSONObject().toString(4));
-							String authorization_code = auth
-									.getAuthorizationCode();
-							log(authorization_code);
-							// sendAuthorizationToServer(auth);
-						} catch (JSONException e) {
-							log("an extremely unlikely failure occurred: " + e);
-						}
-					}
-				} else if (resultCode == Activity.RESULT_CANCELED) {
-					log("The user canceled.");
-					/*
-					 * if (hasListeners("paymentDidCancel")) { KrollDict event =
-					 * new KrollDict(); event.put("success", false);
-					 * fireEvent("paymentDidCancel", event); }
-					 */
-				} else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
-					log("Probably the attempt to previously start the PayPalService had an invalid PayPalConfiguration. Please see the docs.");
-				}
-			}
-
-		}
 	}
 
 }
