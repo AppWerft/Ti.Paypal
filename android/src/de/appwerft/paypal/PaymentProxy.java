@@ -43,7 +43,7 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 // example :https://github.com/paypal/PayPal-Android-SDK/blob/master/SampleApp/src/main/java/com/paypal/example/paypalandroidsdkexample/SampleActivity.java
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
-public class PaymentProxy extends KrollProxy implements OnActivityResultEvent {
+public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
 	private static final String LCAT = "PayPalProxy";
 	String currencyCode, shortDescription, clientId;
