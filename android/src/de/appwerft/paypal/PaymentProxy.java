@@ -43,14 +43,14 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
 	// Standard Debugging variables
-	private static final String LCAT = "PayPalProxy";
+	private static final String LCAT = "PayPalProxy 💰💰";
 	String currencyCode, shortDescription, clientId;
 	int intentMode, debug;
 	boolean futurePayment = false;
 	BigDecimal amount, shipping, tax;
 	public static final int REQUEST_CODE_PAYMENT = 1,
 			REQUEST_CODE_FUTUREPAYMENT = 2;
-	List<KrollDict> paymentItems = null;
+	List<PaymentItem> paymentItems;
 
 	public PaymentProxy() {
 		super();
@@ -60,13 +60,18 @@ public class PaymentProxy extends KrollProxy {
 
 	private void log(String msg) {
 		if (this.debug > 1) {
-			Log.d(LCAT, ">>>>>>>>>>>>" + msg);
+			Log.d(LCAT, msg);
 		}
 	}
 
 	/*
 	 * this method (called by JS level) opens the billing layer
 	 */
+
+	@Kroll.method
+	public void show() {
+		showPaymentOverLay();
+	}
 
 	@Kroll.method
 	public void showPaymentOverLay() {
@@ -91,6 +96,7 @@ public class PaymentProxy extends KrollProxy {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					PaypalModule.ppConfiguration);
 			/* putting payload */
+			Log.d(LCAT, thingsToBuy.toString());
 			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingsToBuy);
 		} else {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
@@ -107,8 +113,8 @@ public class PaymentProxy extends KrollProxy {
 					public void onResult(Activity dummy, int requestCode,
 							int resultCode, Intent data) {
 
-						log("if you see this on console, then the paypal server has anwsered");
-						log(" Answer from PayPal: REQUEST_CODE=" + requestCode
+						log("if you see this on console, then the paypal overlay has anwsered");
+						log(" Answer from PayPal: " + requestCode
 								+ "   resultCode=" + resultCode);
 						if (requestCode == PaymentProxy.REQUEST_CODE_PAYMENT) {
 							log("REQUEST_CODE_PAYMENT");
@@ -123,12 +129,13 @@ public class PaymentProxy extends KrollProxy {
 											log("paymentDidComplete");
 											KrollDict event = new KrollDict();
 											event.put("success", true);
-											event.put("confirm", confirm
-													.toJSONObject().toString(4));
-											event.put("payment", confirm
-													.getPayment()
-													.toJSONObject());
-											log(event.toString());
+											event.put("confirm", new KrollDict(
+													confirm.toJSONObject()));
+
+											event.put("payment", new KrollDict(
+													confirm.getPayment()
+															.toJSONObject()));
+
 											fireEvent("paymentDidComplete",
 													event);
 										}
@@ -141,6 +148,7 @@ public class PaymentProxy extends KrollProxy {
 									log("no RESULT_CONFIRMATION");
 								}
 							} else if (resultCode == Activity.RESULT_CANCELED) {
+								log("RESULT_CANCELED");
 								if (hasListeners("paymentDidCancel")) {
 									log("paymentDidCancel");
 									KrollDict event = new KrollDict();
@@ -148,6 +156,7 @@ public class PaymentProxy extends KrollProxy {
 									fireEvent("paymentDidCancel", event);
 								}
 							} else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+								log("RESULT_EXTRAS_INVALID");
 							}
 						} else if (requestCode == REQUEST_CODE_FUTUREPAYMENT) {
 							if (resultCode == Activity.RESULT_OK) {
@@ -159,7 +168,7 @@ public class PaymentProxy extends KrollProxy {
 										String authorization_code = auth
 												.getAuthorizationCode();
 										log(authorization_code);
-										// sendAuthorizationToServer(auth);
+										sendAuthorizationToServer(auth);
 									} catch (JSONException e) {
 										log("an extremely unlikely failure occurred: "
 												+ e);
@@ -185,8 +194,8 @@ public class PaymentProxy extends KrollProxy {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handleCreationDict(KrollDict options) {
-		log("start importing payement details");
 		super.handleCreationDict(options);
+		log("start importing payment details");
 		if (options.containsKeyAndNotNull("intent")) {
 			this.intentMode = TiConvert.toInt(options.get("intent"));
 		}
@@ -212,18 +221,35 @@ public class PaymentProxy extends KrollProxy {
 			this.shipping = new BigDecimal(TiConvert.toString(options
 					.get("shipping")));
 		}
-		log(options.toString());
 		if (options.containsKeyAndNotNull("items")) {
-			log("importing of items");
-			List<Map<String, String>> paymentItems = new ArrayList<Map<String, String>>();
+			log("importing of items from basket");
+			paymentItems = new ArrayList<PaymentItem>();
 			Object items = options.get("items");
 			if (!(items.getClass().isArray())) {
 				throw new IllegalArgumentException("items must be an array");
 			}
 			Object[] itemArray = (Object[]) items;
-			for (int i = 0; i < itemArray.length; i++) {
-				Map<String, String> item = (Map<String, String>) itemArray[i];
-				paymentItems.add(item);
+			for (int index = 0; index < itemArray.length; index++) {
+				KrollDict dict = new KrollDict((Map) itemArray[index]);
+				PaymentItem paymentItem = new PaymentItem();
+				if (dict.containsKeyAndNotNull("name")) {
+					paymentItem.setName(dict.getString("name"));
+				}
+				if (dict.containsKeyAndNotNull("sku")) {
+					paymentItem.setSku(dict.getString("sku"));
+				}
+				if (dict.containsKeyAndNotNull("currency")) {
+					paymentItem.setCurrency(dict.getString("currency"));
+				}
+				if (dict.containsKeyAndNotNull("quantity")) {
+					paymentItem.setQuantity(dict.getInt("quantity"));
+				}
+				if (dict.containsKeyAndNotNull("price")) {
+					double price = dict.getDouble("price");
+					paymentItem.setPrice(new BigDecimal(price));
+				}
+				paymentItems.add(paymentItem);
+
 			}
 			log("items imported");
 		}
@@ -234,6 +260,8 @@ public class PaymentProxy extends KrollProxy {
 						+ configurationDict.getClass().getName()
 						+ "` passed to consume()");
 			}
+			log("PaypalModule.CONFIG_ENVIRONMENT="
+					+ PaypalModule.CONFIG_ENVIRONMENT);
 			PaypalModule.ppConfiguration
 					.environment(PaypalModule.CONFIG_ENVIRONMENT);
 			if (configurationDict.containsKeyAndNotNull("merchantName")) {
@@ -257,42 +285,23 @@ public class PaymentProxy extends KrollProxy {
 			}
 			PaypalModule.ppConfiguration.clientId(PaypalModule.clientId);
 			log(PaypalModule.ppConfiguration.toString());
-			log("PaypalModule.clientId" + PaypalModule.clientId);
 		}
-
 	}
 
 	private PayPalPayment getStuffToBuy(String paymentIntent) {
 		log("getStuffToBuy started");
 		if (paymentItems == null) {
+			log("payment only in short form, without basket");
 			return new PayPalPayment(amount, currencyCode, shortDescription,
 					paymentIntent);
 		}
-		/* iterating thrue all items from KrollDict: */
+		/* iterating thru all items from KrollDict: */
 		PayPalItem[] items = new PayPalItem[this.paymentItems.size()];
 		for (int i = 0; i < this.paymentItems.size(); i++) {
-			String name = "no name", sku = "000", currency = "EUR";
-			BigDecimal price = new BigDecimal(0);
-			int quantity = 1;
-			KrollDict paymentItem = paymentItems.get(i);
-			if (paymentItem.containsKeyAndNotNull("name")) {
-				name = TiConvert.toString(paymentItem.get("name"));
-			}
-			if (paymentItem.containsKeyAndNotNull("sku")) {
-				sku = TiConvert.toString(paymentItem.get("sku"));
-			}
-			if (paymentItem.containsKeyAndNotNull("currency")) {
-				currency = TiConvert.toString(paymentItem.get("currency"));
-			}
-			if (paymentItem.containsKeyAndNotNull("quantity")) {
-				quantity = TiConvert.toInt(paymentItem.get("quantity"));
-			}
-			if (paymentItem.containsKeyAndNotNull("price")) {
-				price = new BigDecimal(TiConvert.toString(paymentItem
-						.get("price")));
-			}
-			items[i] = new PayPalItem(name, quantity, price, currency, sku);
-
+			items[i] = new PayPalItem(paymentItems.get(i).getName(),
+					paymentItems.get(i).getQuantity(), paymentItems.get(i)
+							.getPrice(), paymentItems.get(i).getCurrency(),
+					paymentItems.get(i).getSku());
 		}
 		BigDecimal subtotal = PayPalItem.getItemTotal(items);
 		BigDecimal shipping = this.shipping;
@@ -308,6 +317,7 @@ public class PaymentProxy extends KrollProxy {
 	}
 
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
+		// here you can send some stuff to your own server
 	}
 
 }

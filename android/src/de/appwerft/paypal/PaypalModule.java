@@ -32,12 +32,13 @@ import java.util.ArrayList;
 
 @Kroll.module(name = "Paypal", id = "de.appwerft.paypal")
 public class PaypalModule extends KrollModule {
-	private static final String LCAT = "PaypalModule";
-	public int debugLevel;
-	public String clientIdSandbox;
-	public String clientIdProduction;
+	private static final String LCAT = "PaypalModule  💰";
+	private int debugLevel;
+	private String clientIdSandbox;
+	private String clientIdProduction;
 	public static String clientId;
-	public static int environment;
+	private static boolean acceptCreditCards = true;
+	private static int environment;
 	public static String CONFIG_ENVIRONMENT;
 
 	public static int debug = 0;
@@ -81,37 +82,51 @@ public class PaypalModule extends KrollModule {
 				"");
 		clientIdProduction = appProperties.getString(
 				"PAYPAL_CLIENT_ID_PRODUCTION", "");
+
+		/* these was defaults from tiapp.xml, now runtime parameters: */
 		if (args != null && args instanceof KrollDict) {
 			if (args.containsKeyAndNotNull("clientIdSandbox")) {
+				Log.d(LCAT, "importing clientIdSandbox from init");
 				clientIdSandbox = TiConvert.toString(args
 						.get("clientIdSandbox"));
 			}
 			if (args.containsKeyAndNotNull("clientIdProduction")) {
+				Log.d(LCAT, "importing clientIdProd from init");
 				clientIdProduction = TiConvert.toString(args
 						.get("clientIdProduction"));
 			}
 			if (args.containsKeyAndNotNull("environment")) {
+				Log.d(LCAT, "importing environment from init");
 				environment = TiConvert.toInt(args.get("environment"));
 			}
+			if (args.containsKeyAndNotNull("acceptCreditCards")) {
+				acceptCreditCards = TiConvert.toBoolean(args
+						.get("acceptCreditCards"));
+			}
 			if (environment == ENVIRONMENT_SANDBOX) {
+				Log.d(LCAT, "env is sandbox");
 				CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_SANDBOX;
 				clientId = clientIdSandbox;
 			}
 			if (environment == ENVIRONMENT_PRODUCTION) {
+				Log.d(LCAT, "env is prod");
 				CONFIG_ENVIRONMENT = PayPalConfiguration.ENVIRONMENT_PRODUCTION;
 				clientId = clientIdProduction;
 			}
+
 		}
 		Log.d(LCAT, ">>>>>>>> clientId=" + clientId);
 		Context context = TiApplication.getInstance().getApplicationContext();
 		/* starting paypal service */
 		ppConfiguration = new PayPalConfiguration()
 				.environment(CONFIG_ENVIRONMENT).clientId(clientId)
-				.languageOrLocale("en");
+				.languageOrLocale("en").acceptCreditCards(false);
 		Intent intent = new Intent(context, PayPalService.class);
 		intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 				ppConfiguration);
 		context.startService(intent);
+		Log.d(LCAT, "PayPalService started " + CONFIG_ENVIRONMENT
+				+ " clientId=" + clientId);
 	}
 
 	@Kroll.method
