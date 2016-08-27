@@ -8,6 +8,14 @@ public class PaymentItem {
 	int quantity;
 	BigDecimal price;
 
+	public PaymentItem() {
+		this.name = "no name";
+		this.sku = "no sku";
+		this.quantity = 1;
+		this.price = new BigDecimal(0);
+		this.currency = "USD";
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -52,10 +60,6 @@ public class PaymentItem {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
-	}
-
-	public PaymentItem() {
-
 	}
 
 }

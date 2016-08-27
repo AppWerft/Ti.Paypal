@@ -240,17 +240,15 @@ public class PaymentProxy extends KrollProxy {
 				if (dict.containsKeyAndNotNull("currency")) {
 					paymentItem.setCurrency(dict.getString("currency"));
 				}
+				paymentItem.setCurrency("USD");
 				if (dict.containsKeyAndNotNull("quantity")) {
 					paymentItem.setQuantity(dict.getInt("quantity"));
-				} else
-					paymentItem.setQuantity(0);
-				double price = 0;
-				if (dict.containsKeyAndNotNull("price")) {
-					price = dict.getDouble("price");
 				}
-				paymentItem.setPrice(new BigDecimal(price));
+				if (dict.containsKeyAndNotNull("price")) {
+					double price = dict.getDouble("price");
+					paymentItem.setPrice(new BigDecimal(price));
+				}
 				paymentItems.add(paymentItem);
-
 			}
 			log("items imported");
 		}
