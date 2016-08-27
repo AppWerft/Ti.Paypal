@@ -16,6 +16,12 @@ public class PaymentItem {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return "quantity=" + quantity + " name=" + name + " sku=" + sku
+				+ " currency" + currency + " price=" + price.toString();
+	}
+
 	public String getSku() {
 		return sku;
 	}

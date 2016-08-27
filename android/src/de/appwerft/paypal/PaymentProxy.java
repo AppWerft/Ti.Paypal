@@ -47,7 +47,8 @@ public class PaymentProxy extends KrollProxy {
 	String currencyCode, shortDescription, clientId;
 	int intentMode, debug;
 	boolean futurePayment = false;
-	BigDecimal amount, shipping, tax;
+	BigDecimal amount = new BigDecimal(0.0), shipping = new BigDecimal(0.0),
+			tax = new BigDecimal(0.0);
 	public static final int REQUEST_CODE_PAYMENT = 1,
 			REQUEST_CODE_FUTUREPAYMENT = 2;
 	List<PaymentItem> paymentItems;
@@ -131,11 +132,9 @@ public class PaymentProxy extends KrollProxy {
 											event.put("success", true);
 											event.put("confirm", new KrollDict(
 													confirm.toJSONObject()));
-
 											event.put("payment", new KrollDict(
 													confirm.getPayment()
 															.toJSONObject()));
-
 											fireEvent("paymentDidComplete",
 													event);
 										}
@@ -243,11 +242,13 @@ public class PaymentProxy extends KrollProxy {
 				}
 				if (dict.containsKeyAndNotNull("quantity")) {
 					paymentItem.setQuantity(dict.getInt("quantity"));
-				}
+				} else
+					paymentItem.setQuantity(0);
+				double price = 0;
 				if (dict.containsKeyAndNotNull("price")) {
-					double price = dict.getDouble("price");
-					paymentItem.setPrice(new BigDecimal(price));
+					price = dict.getDouble("price");
 				}
+				paymentItem.setPrice(new BigDecimal(price));
 				paymentItems.add(paymentItem);
 
 			}
@@ -298,17 +299,25 @@ public class PaymentProxy extends KrollProxy {
 		/* iterating thru all items from KrollDict: */
 		PayPalItem[] items = new PayPalItem[this.paymentItems.size()];
 		for (int i = 0; i < this.paymentItems.size(); i++) {
-			items[i] = new PayPalItem(paymentItems.get(i).getName(),
-					paymentItems.get(i).getQuantity(), paymentItems.get(i)
-							.getPrice(), paymentItems.get(i).getCurrency(),
-					paymentItems.get(i).getSku());
+			PaymentItem item = paymentItems.get(i);
+			items[i] = new PayPalItem(item.getName(), item.getQuantity(),
+					item.getPrice(), item.getCurrency(), item.getSku());
+			Log.d(LCAT, item.toString());
 		}
+		Log.d(LCAT, "all items collected, try to build subtotal");
 		BigDecimal subtotal = PayPalItem.getItemTotal(items);
+		Log.d(LCAT, "subtotal=" + subtotal.toString());
+		Log.d(LCAT, "try to read shipping");
 		BigDecimal shipping = this.shipping;
+		Log.d(LCAT, "try to read tax");
 		BigDecimal tax = this.tax;
+		Log.d(LCAT,
+				"all cost collected, try to build paymentDetails (total of shipping,total,tax)");
 		PayPalPaymentDetails paymentDetails = new PayPalPaymentDetails(
 				shipping, subtotal, tax);
+		Log.d(LCAT, " paymentDetails built");
 		BigDecimal amount = subtotal.add(shipping).add(tax);
+		Log.d(LCAT, " amount built");
 		PayPalPayment payment = new PayPalPayment(amount, this.currencyCode,
 				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
