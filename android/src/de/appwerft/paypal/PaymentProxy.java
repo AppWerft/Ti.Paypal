@@ -97,7 +97,6 @@ public class PaymentProxy extends KrollProxy {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					PaypalModule.ppConfiguration);
 			/* putting payload */
-			Log.d(LCAT, thingsToBuy.toString());
 			intent.putExtra(PaymentActivity.EXTRA_PAYMENT, thingsToBuy);
 		} else {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
@@ -300,22 +299,13 @@ public class PaymentProxy extends KrollProxy {
 			PaymentItem item = paymentItems.get(i);
 			items[i] = new PayPalItem(item.getName(), item.getQuantity(),
 					item.getPrice(), item.getCurrency(), item.getSku());
-			Log.d(LCAT, item.toString());
 		}
-		Log.d(LCAT, "all items collected, try to build subtotal");
 		BigDecimal subtotal = PayPalItem.getItemTotal(items);
-		Log.d(LCAT, "subtotal=" + subtotal.toString());
-		Log.d(LCAT, "try to read shipping");
 		BigDecimal shipping = this.shipping;
-		Log.d(LCAT, "try to read tax");
 		BigDecimal tax = this.tax;
-		Log.d(LCAT,
-				"all cost collected, try to build paymentDetails (total of shipping,total,tax)");
 		PayPalPaymentDetails paymentDetails = new PayPalPaymentDetails(
 				shipping, subtotal, tax);
-		Log.d(LCAT, " paymentDetails built");
 		BigDecimal amount = subtotal.add(shipping).add(tax);
-		Log.d(LCAT, " amount built");
 		PayPalPayment payment = new PayPalPayment(amount, this.currencyCode,
 				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
