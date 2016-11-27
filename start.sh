@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APPID=de.appwerft.paypal
-VERSION=1.1.3
+VERSION=2.0.0
 
 #cp android/assets/* iphone/
 cd android;ant clean; rm -rf build/*;ant ;  unzip -uo  dist/$APPID-android-$VERSION.zip  -d  ~/Library/Application\ Support/Titanium/;cd ..
