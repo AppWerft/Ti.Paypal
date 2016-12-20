@@ -323,7 +323,10 @@ public class PaymentProxy extends KrollProxy {
 	}
 
 	private void sendAuthorizationToServer(PayPalAuthorization authorization) {
-		// here you can send some stuff to your own server
+		KrollDict res = new KrollDict();
+		res.put("code", authorization.getAuthorizationCode());
+		res.put("environment", authorization.getEnvironment());
+		res.put("json", authorization.toJSONObject());
+		fireEvent("autorization", res);
 	}
-
 }
