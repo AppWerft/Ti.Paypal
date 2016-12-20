@@ -196,9 +196,6 @@ public class PaymentProxy extends KrollProxy {
 				}
 			});
 		}
-		activitySupport.launchActivityForResult(intent, REQUEST_CODE_PAYMENT,
-				new PaymentResultHandler());
-
 	}
 
 	@SuppressWarnings("unchecked")
