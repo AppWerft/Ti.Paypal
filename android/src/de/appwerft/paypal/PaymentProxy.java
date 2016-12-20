@@ -17,6 +17,7 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.kroll.common.TiMessenger;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiActivityResultHandler;
 import org.appcelerator.titanium.util.TiActivitySupport;
@@ -156,7 +157,7 @@ public class PaymentProxy extends KrollProxy {
 	public void showPaymentOverLay() {
 		Context context = TiApplication.getInstance().getApplicationContext();
 		// Activity a = TiApplication.getAppRootOrCurrentActivity();
-		Intent intent = new Intent(context, PaymentActivity.class);
+		final Intent intent = new Intent(context, PaymentActivity.class);
 		log("start opening paypal billing layer");
 
 		if (futurePayment == false) {
@@ -180,8 +181,21 @@ public class PaymentProxy extends KrollProxy {
 			intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
 					PaypalModule.ppConfiguration);
 		}
-		TiActivitySupport activitySupport = (TiActivitySupport) TiApplication
+		final TiActivitySupport activitySupport = (TiActivitySupport) TiApplication
 				.getInstance().getCurrentActivity();
+
+		if (TiApplication.isUIThread()) {
+			activitySupport.launchActivityForResult(intent,
+					REQUEST_CODE_PAYMENT, new PaymentResultHandler());
+		} else {
+			TiMessenger.postOnMain(new Runnable() {
+				@Override
+				public void run() {
+					activitySupport.launchActivityForResult(intent,
+							REQUEST_CODE_PAYMENT, new PaymentResultHandler());
+				}
+			});
+		}
 		activitySupport.launchActivityForResult(intent, REQUEST_CODE_PAYMENT,
 				new PaymentResultHandler());
 
