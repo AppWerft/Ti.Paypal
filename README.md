@@ -152,7 +152,8 @@ Ti.API.warn("paymentDidCancel");
 payment.addEventListener("paymentDidComplete", function(e) {
 Ti.API.warn("paymentDidComplete");
 });
-
+payment.addEventListener("authorization", function(e) {
+});
 payment.showPaymentOverlay();	
 ~~~
 
