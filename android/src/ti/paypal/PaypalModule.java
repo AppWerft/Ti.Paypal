@@ -8,25 +8,23 @@
  */
 package ti.paypal;
 
-import java.util.Locale;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Locale;
 
-import org.appcelerator.kroll.KrollModule;
-import org.appcelerator.titanium.TiProperties;
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiApplication;
-import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.kroll.common.Log;
+import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiProperties;
+import org.appcelerator.titanium.util.TiConvert;
 
 import android.content.Context;
 import android.content.Intent;
 
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalService;
-import com.paypal.android.sdk.payments.PaymentActivity;
-
-import java.util.ArrayList;
 
 // alternativ: https://github.com/luis1987/PayPalAppcelerator/blob/master/android/src/com/bea/paypal/ModulopaypalModule.java
 

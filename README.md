@@ -30,7 +30,7 @@ Unpack the module and place it inside the `modules/android/` folder of your proj
 Edit the modules section of your `tiapp.xml` file to include this module:
 ```xml
 <modules>
-    <module platform="android">ti.paypal</module>
+    <module platform="android">de.appwerft.paypal</module>
 </modules>
 ```
 
@@ -59,7 +59,7 @@ var PayPal = require("ti.paypal");
 ```
 Alternativly can you set the creds at runtime: 
 ```js
-var PayPal = require("ti.paypal");
+var PayPal = require("de.appwerft.paypal");
 PayPal.initPayment({
     clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     clientIdProduction: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
@@ -235,5 +235,3 @@ Apache 2.0
 Contributing
 ---------------
 Code contributions are greatly appreciated, please submit a new [pull request](https://github.com/appwerft/ti.paypal/pull/new/master)!
-
-0
