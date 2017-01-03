@@ -30,7 +30,7 @@ Unpack the module and place it inside the `modules/android/` folder of your proj
 Edit the modules section of your `tiapp.xml` file to include this module:
 ```xml
 <modules>
-<module platform="android">de.appwerft.paypal</module>
+    <module platform="android">de.appwerft.paypal</module>
 </modules>
 ```
 
@@ -47,19 +47,18 @@ Optionally you can modify the theming (suppressing/coloring actionbar and/or nav
 
 If you have only one instance of PayPal billing in you app, the you can put the PayPal credentials into tiapp.xml:
 
-~~~
+```xml
 <property name="PAYPAL_CLIENT_ID_SANDBOX" type="string">AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2</property>
 <property name="PAYPAL_CLIENT_ID_PRODUCTION" type="string">FQG0****************</property>
 <property name="PAYPAL_ENVIRONMENT" type="string">PRODUCTION</property>
-~~~
+
 
 In this case you can simple instantiate with:
-~~~
+```js
 var PayPal = require("ti.paypal");
-~~~
-
+```
 Alternativly can you set the creds at runtime: 
-```javascript
+```js
 var PayPal = require("de.appwerft.paypal");
 PayPal.initPayment({
     clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
@@ -75,16 +74,12 @@ Features
 A simple payment is used for do instant payments with items you define. Watch the events for updates on your transaction.
 
 ```javascript
-
-
 var configuration = PayPal.createConfiguration( {
     merchantName: "John Doe",
     merchantPrivacyPolicyURL: "http://google.com",
     merchantUserAgreementURL: "http://google.com",
     locale: "en" // Any ISO 639-1
-    },
-);
-
+});
 
 var payment = PayPal.createPayment({
     // Required
@@ -110,7 +105,6 @@ payment.addEventListener("paymentDidCancel", function(e) {
     Ti.API.warn("paymentDidCancel");
 });
 
-
 payment.addEventListener("paymentDidComplete", function(e) {
     Ti.API.warn("paymentDidComplete");
 });
@@ -119,11 +113,9 @@ payment.showPaymentOverLay();
 ```
 
 Or compact:
-~~~
-
-
+```js
 var payment = PayPal.createPayment({
-// Required
+    // Required
     configuration : {
         merchantName: "John Doe",
         merchantPrivacyPolicyURL: "http://google.com",
@@ -146,23 +138,24 @@ var payment = PayPal.createPayment({
 });
 
 payment.addEventListener("paymentDidCancel", function(e) {
-Ti.API.warn("paymentDidCancel");
+    Ti.API.warn("paymentDidCancel");
 });
 
 payment.addEventListener("paymentDidComplete", function(e) {
-Ti.API.warn("paymentDidComplete");
+    Ti.API.warn("paymentDidComplete");
 });
-payment.addEventListener("authorization", function(e) {
-});
-payment.showPaymentOverlay();	
-~~~
 
+payment.addEventListener("authorization", function(e) {
+    Ti.API.warn("authorization");
+});
+
+payment.showPaymentOverlay();	
+```
 
 #### Future Payment
 A future payment is used to ask the buyer for the permission to charge his account later.
 
-```javascript;
-
+```js
 var payment = PayPal.createPayment({
     configuration: {
         merchantName: "John Doe",
@@ -200,29 +193,29 @@ Profile sharing is used to share a user profile by defining different scopes tha
 - [x] SCOPE_ADDRESS
 - [x] SCOPE_PHONE
 
-```javascript
+```js
 var configuration = PayPal.createConfiguration({
-merchantName: "John Doe",
-merchantPrivacyPolicyURL: "http://google.com",
-merchantUserAgreementURL: "http://google.com",
-locale: "en"
+    merchantName: "John Doe",
+    merchantPrivacyPolicyURL: "http://google.com",
+    merchantUserAgreementURL: "http://google.com",
+    locale: "en"
 });
 
 var profile = PayPal.createProfileSharing({
-configuration: configuration,
-scopes: [PayPal.SCOPE_PROFILE, PayPal.SCOPE_EMAIL]
+    configuration: configuration,
+    scopes: [PayPal.SCOPE_PROFILE, PayPal.SCOPE_EMAIL]
 });
 
 profile.addEventListener("profileSharingDidCancel", function(e) {
-Ti.API.warn("profileSharingDidCancel");
+    Ti.API.warn("profileSharingDidCancel");
 });
 
 profile.addEventListener("profileSharingWillLogIn", function(e) {
-Ti.API.warn("profileSharingWillLogIn");
+    Ti.API.warn("profileSharingWillLogIn");
 });
 
 profile.addEventListener("profileSharingDidLogIn", function(e) {
-Ti.API.warn("profileSharingDidLogIn");
+    Ti.API.warn("profileSharingDidLogIn");
 });
 
 profile.show();
@@ -241,4 +234,4 @@ Apache 2.0
 
 Contributing
 ---------------
-Code contributions are greatly appreciated, please submit a new [pull request](https://github.com/hansemannn/ti.paypal/pull/new/master)!
+Code contributions are greatly appreciated, please submit a new [pull request](https://github.com/appwerft/ti.paypal/pull/new/master)!
