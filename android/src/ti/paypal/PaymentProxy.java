@@ -6,7 +6,7 @@
  * Please see the LICENSE included with this distribution for details.
  *
  */
-package de.appwerft.paypal;
+package ti.paypal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

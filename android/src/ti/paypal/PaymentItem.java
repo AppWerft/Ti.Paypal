@@ -1,4 +1,4 @@
-package de.appwerft.paypal;
+package ti.paypal;
 
 import java.math.BigDecimal;
 

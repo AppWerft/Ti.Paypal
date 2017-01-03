@@ -6,7 +6,7 @@
  * Please see the LICENSE included with this distribution for details.
  *
  */
-package de.appwerft.paypal;
+package ti.paypal;
 
 import java.util.Locale;
 import java.util.Currency;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 // alternativ: https://github.com/luis1987/PayPalAppcelerator/blob/master/android/src/com/bea/paypal/ModulopaypalModule.java
 
-@Kroll.module(name = "Paypal", id = "de.appwerft.paypal")
+@Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
 	private static final String LCAT = "PaypalModule  💰";
 	private int debugLevel;
