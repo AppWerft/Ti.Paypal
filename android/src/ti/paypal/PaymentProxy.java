@@ -79,7 +79,7 @@ public class PaymentProxy extends KrollProxy {
 
 							response.put("create_time",
 									proofOfPayment.getCreateTime());
-							response.put("intent", intentMode);
+							response.put("intent", proofOfPayment.getIntent());
 							response.put("order_id",
 									proofOfPayment.getTransactionId());
 							response.put("state", proofOfPayment.getState());
