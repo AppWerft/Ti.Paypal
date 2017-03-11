@@ -2,9 +2,9 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 2.0.5
-apiversion: 2
-architectures: armeabi armeabi-v7a x86
+version: 3.0.5
+apiversion: 3
+architectures: armeabi-v7a x86
 description: Paypal adapter for Android
 author: Rainer Schleevoigt
 license: Apache
@@ -15,4 +15,4 @@ name: TiPaypalAndroid
 moduleid: ti.paypal
 guid: 350cce68-1225-45e4-855b-0dd13654c310
 platform: android
-minsdk: 4.0.0.GA
+minsdk: 6.0.0.GA
