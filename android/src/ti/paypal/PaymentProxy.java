@@ -63,31 +63,33 @@ public class PaymentProxy extends KrollProxy {
 							.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
 					if (confirm != null) {
 						log("RESULT_CONFIRMATION");
-						try {
-							if (hasListeners("paymentDidComplete")) {
-								log("paymentDidComplete");
-								KrollDict event = new KrollDict();
-								ProofOfPayment pop = confirm
-										.getProofOfPayment();
-								event.put("success", true);
-								event.put("environment",
-										confirm.getEnvironment());
-								event.put("create_time", pop.getCreateTime());
-								event.put("order_id", pop.getPaymentId());
-								event.put("state", pop.getState());
-								event.put("transaction_id",
-										pop.getTransactionId());
-								event.put("confirm",
-										new KrollDict(confirm.toJSONObject()));
-								event.put("payment", new KrollDict(confirm
-										.getPayment().toJSONObject()));
-								fireEvent("paymentDidComplete", event);
-							}
-						} catch (JSONException e) {
-							Log.e(LCAT,
-									"an extremely unlikely failure occurred: ",
-									e);
+
+						if (hasListeners("paymentDidComplete")) {
+							ProofOfPayment proofOfPayment = confirm
+									.getProofOfPayment();
+
+							KrollDict client = new KrollDict();
+							KrollDict response = new KrollDict();
+							KrollDict event = new KrollDict();
+							KrollDict payment = new KrollDict();
+
+							client.put("environment", confirm.getEnvironment());
+							client.put("platform", "Android");
+							client.put("product_name", "PayPal Android SDK");
+
+							response.put("create_time",
+									proofOfPayment.getCreateTime());
+							response.put("intent", intentMode);
+							response.put("order_id",
+									proofOfPayment.getTransactionId());
+							response.put("state", proofOfPayment.getState());
+							response.put("id", proofOfPayment.getPaymentId());
+							payment.put("client", client);
+							payment.put("response", response);
+							event.put("payment", payment);
+							fireEvent("paymentDidComplete", event);
 						}
+
 					} else {
 						log("no RESULT_CONFIRMATION");
 					}
