@@ -65,8 +65,13 @@ public class PaymentProxy extends KrollProxy {
 						try {
 							if (hasListeners("paymentDidComplete")) {
 								log("paymentDidComplete");
+								PayPalPayment ppp = confirm.getPayment();
 								KrollDict event = new KrollDict();
 								event.put("success", true);
+								event.put("environment",
+										confirm.getEnvironment());
+								event.put("proofOfPayment",
+										confirm.getProofOfPayment());
 								event.put("confirm",
 										new KrollDict(confirm.toJSONObject()));
 								event.put("payment", new KrollDict(confirm
@@ -245,10 +250,10 @@ public class PaymentProxy extends KrollProxy {
 				if (dict.containsKeyAndNotNull("sku")) {
 					paymentItem.setSku(dict.getString("sku"));
 				}
-                paymentItem.setCurrency("USD");
+				paymentItem.setCurrency("USD");
 				if (dict.containsKeyAndNotNull("currency")) {
 					paymentItem.setCurrency(dict.getString("currency"));
-                    
+
 				}
 				if (dict.containsKeyAndNotNull("quantity")) {
 					paymentItem.setQuantity(dict.getInt("quantity"));
