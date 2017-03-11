@@ -37,6 +37,7 @@ import com.paypal.android.sdk.payments.PayPalPaymentDetails;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
+import com.paypal.android.sdk.payments.ProofOfPayment;
 
 // https://github.com/luis1987/PayPalAppcelerator/blob/master/android/src/com/bea/paypal/ModulopaypalModule.java
 // example :https://github.com/paypal/PayPal-Android-SDK/blob/master/SampleApp/src/main/java/com/paypal/example/paypalandroidsdkexample/SampleActivity.java
@@ -65,13 +66,17 @@ public class PaymentProxy extends KrollProxy {
 						try {
 							if (hasListeners("paymentDidComplete")) {
 								log("paymentDidComplete");
-								PayPalPayment ppp = confirm.getPayment();
 								KrollDict event = new KrollDict();
+								ProofOfPayment pop = confirm
+										.getProofOfPayment();
 								event.put("success", true);
 								event.put("environment",
 										confirm.getEnvironment());
-								event.put("proofOfPayment",
-										confirm.getProofOfPayment());
+								event.put("create_time", pop.getCreateTime());
+								event.put("order_id", pop.getPaymentId());
+								event.put("state", pop.getState());
+								event.put("transaction_id",
+										pop.getTransactionId());
 								event.put("confirm",
 										new KrollDict(confirm.toJSONObject()));
 								event.put("payment", new KrollDict(confirm
