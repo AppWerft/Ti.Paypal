@@ -230,15 +230,14 @@ public class PaymentProxy extends KrollProxy {
 					.get("shortDescription"));
 		}
 		if (options.containsKeyAndNotNull("amount")) {
-			this.amount = new BigDecimal(TiConvert.toString(options
-					.get("amount")));
+			this.amount = new BigDecimal(options.getDouble("amount"));
+
 		}
 		if (options.containsKeyAndNotNull("tax")) {
-			this.tax = new BigDecimal(TiConvert.toString(options.get("tax")));
+			this.tax = new BigDecimal(options.getDouble("tax"));
 		}
 		if (options.containsKeyAndNotNull("shipping")) {
-			this.shipping = new BigDecimal(TiConvert.toString(options
-					.get("shipping")));
+			this.shipping = new BigDecimal(options.getDouble("shipping"));
 		}
 		if (options.containsKeyAndNotNull("items")) {
 			log("importing of items from basket");
@@ -249,7 +248,8 @@ public class PaymentProxy extends KrollProxy {
 			}
 			Object[] itemArray = (Object[]) items;
 			for (int index = 0; index < itemArray.length; index++) {
-				KrollDict dict = new KrollDict((Map) itemArray[index]);
+				KrollDict dict = new KrollDict(
+						(Map<? extends String, ? extends Object>) itemArray[index]);
 				PaymentItem paymentItem = new PaymentItem();
 				if (dict.containsKeyAndNotNull("name")) {
 					paymentItem.setName(dict.getString("name"));
