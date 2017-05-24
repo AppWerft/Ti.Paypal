@@ -134,7 +134,7 @@ public class PaymentProxy extends KrollProxy {
 	}
 
 	// Standard Debugging variables
-	private static final String LCAT = "PayPalProxy 💰💰";
+	private static final String LCAT = "PaypalProxy 💰💰";
 	String currencyCode, shortDescription, clientId;
 	int intentMode, debug;
 	boolean futurePayment = false;

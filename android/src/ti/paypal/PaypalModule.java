@@ -30,7 +30,7 @@ import com.paypal.android.sdk.payments.PayPalService;
 
 @Kroll.module(name = "Paypal", id = "ti.paypal")
 public class PaypalModule extends KrollModule {
-	private static final String LCAT = "PaypalModule  💰";
+	private static final String LCAT = "PaypalModule 💰";
 	private int debugLevel;
 	private String clientIdSandbox;
 	private String clientIdProduction;
@@ -39,7 +39,7 @@ public class PaypalModule extends KrollModule {
 	private static int environment;
 	public static String CONFIG_ENVIRONMENT;
 
-	public static int debug = 0;
+	public static int debug = 1;
 
 	public static PayPalConfiguration ppConfiguration;
 
