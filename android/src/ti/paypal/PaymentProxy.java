@@ -232,6 +232,7 @@ public class PaymentProxy extends KrollProxy {
 		if (options.containsKeyAndNotNull("amount")) {
 			this.amount = (new BigDecimal(options.getDouble("amount")))
 					.setScale(2, BigDecimal.ROUND_HALF_UP);
+			Log.d(LCAT, ">>>>>>>>>>>>>>>>>> Amount=" + this.amount);
 		}
 		if (options.containsKeyAndNotNull("tax")) {
 			this.tax = (new BigDecimal(options.getDouble("tax"))).setScale(2,
