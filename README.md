@@ -42,31 +42,18 @@ Add this into your application section of Manifest:
 <activity android:name="com.paypal.android.sdk.payments.PaymentMethodActivity"/>
 <activity android:name="com.paypal.android.sdk.payments.PaymentConfirmActivity"/>
 ```
+If you use tiapp.xml you can ignore this step. 
 
 Optionally you can modify the theming (suppressing/coloring actionbar and/or navigationbar)
 
-If you have only one instance of PayPal billing in you app, the you can put the PayPal credentials into tiapp.xml:
-
-```xml
-<property name="PAYPAL_CLIENT_ID_SANDBOX" type="string">AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2</property>
-<property name="PAYPAL_CLIENT_ID_PRODUCTION" type="string">FQG0****************</property>
-<property name="PAYPAL_ENVIRONMENT" type="string">PRODUCTION</property>
-
-
-In this case you can simple instantiate with:
-```js
-var PayPal = require("ti.paypal");
-```
-Alternativly can you set the creds at runtime: 
-```js
+```javascript
 var PayPal = require("de.appwerft.paypal");
-PayPal.initPayment({
+PayPal.initialize({
     clientIdSandbox: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     clientIdProduction: "AYXg7yzeFQG08l*************zHkfoBOCtoB50KeooDq2",
     environment: PayPal.ENVIRONMENT_SANDBOX // or: ENVIRONMENT_PRODUCTION
 });
 ```
-And you can mix, i.e. Ids in tiapp.xml and the select at runtime.
 
 Features
 --------------------------------
@@ -108,6 +95,8 @@ payment.addEventListener("paymentDidCancel", function(e) {
 payment.addEventListener("paymentDidComplete", function(e) {
     Ti.API.warn("paymentDidComplete");
 });
+
+`paymentWillComplete` is not available for Android
 
 payment.showPaymentOverLay();	
 ```
