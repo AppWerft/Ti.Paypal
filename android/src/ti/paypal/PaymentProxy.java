@@ -230,17 +230,14 @@ public class PaymentProxy extends KrollProxy {
 					.get("shortDescription"));
 		}
 		if (options.containsKeyAndNotNull("amount")) {
-			this.amount = (new BigDecimal(options.getDouble("amount")))
-					.setScale(2, BigDecimal.ROUND_HALF_UP);
+			this.amount = toAmount(options.getDouble("amount"));
 			Log.d(LCAT, ">>>>>>>>>>>>>>>>>> Amount=" + this.amount);
 		}
 		if (options.containsKeyAndNotNull("tax")) {
-			this.tax = (new BigDecimal(options.getDouble("tax"))).setScale(2,
-					BigDecimal.ROUND_HALF_UP);
+			this.tax = toAmount(options.getDouble("tax"));
 		}
 		if (options.containsKeyAndNotNull("shipping")) {
-			this.shipping = (new BigDecimal(options.getDouble("shipping")))
-					.setScale(2, BigDecimal.ROUND_HALF_UP);
+			this.shipping = toAmount(options.getDouble("shipping"));
 		}
 		if (options.containsKeyAndNotNull("items")) {
 			log("importing of items from basket");
@@ -269,8 +266,7 @@ public class PaymentProxy extends KrollProxy {
 					paymentItem.setQuantity(dict.getInt("quantity"));
 				}
 				if (dict.containsKeyAndNotNull("price")) {
-					double price = dict.getDouble("price");
-					paymentItem.setPrice(new BigDecimal(price));
+					paymentItem.setPrice(toAmount(dict.getDouble("price")));
 				}
 				paymentItems.add(paymentItem);
 			}
@@ -345,5 +341,9 @@ public class PaymentProxy extends KrollProxy {
 		res.put("environment", authorization.getEnvironment());
 		res.put("json", authorization.toJSONObject());
 		fireEvent("autorization", res);
+	}
+
+	private BigDecimal toAmount(double foo) {
+		return (new BigDecimal(foo)).setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 }
