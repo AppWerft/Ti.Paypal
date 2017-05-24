@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APPID=ti.paypal
-VERSION=3.0.7
+VERSION=3.0.8
 
 #cp android/assets/* iphone/
 cd android;ant clean; rm -rf build/*;ant ;  unzip -uo  dist/$APPID-android-$VERSION.zip  -d  ~/Library/Application\ Support/Titanium/;cd ..
