@@ -230,13 +230,16 @@ public class PaymentProxy extends KrollProxy {
 					.get("shortDescription"));
 		}
 		if (options.containsKeyAndNotNull("amount")) {
-			this.amount = new BigDecimal(options.getDouble("amount"));
+			this.amount = (new BigDecimal(options.getDouble("amount")))
+					.setScale(2, BigDecimal.ROUND_HALF_UP);
 		}
 		if (options.containsKeyAndNotNull("tax")) {
-			this.tax = new BigDecimal(options.getDouble("tax"));
+			this.tax = (new BigDecimal(options.getDouble("tax"))).setScale(2,
+					BigDecimal.ROUND_HALF_UP);
 		}
 		if (options.containsKeyAndNotNull("shipping")) {
-			this.shipping = new BigDecimal(options.getDouble("shipping"));
+			this.shipping = (new BigDecimal(options.getDouble("shipping")))
+					.setScale(2, BigDecimal.ROUND_HALF_UP);
 		}
 		if (options.containsKeyAndNotNull("items")) {
 			log("importing of items from basket");
