@@ -334,7 +334,7 @@ public class PaymentProxy extends KrollProxy {
 				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
 		payment.custom("This is text that will be associated with the payment that the app can use.");
-		// Log.d(LCAT, "payment=" + payment.toString());
+		Log.d(LCAT, "payment=" + payment.toString());
 		return payment;
 	}
 
