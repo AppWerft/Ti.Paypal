@@ -231,7 +231,7 @@ public class PaymentProxy extends KrollProxy {
 		}
 		if (options.containsKeyAndNotNull("amount")) {
 			this.amount = new BigDecimal(options.getDouble("amount"));
-
+			Log.d(LCAT, "Log for Gianluca: amount=" + this.amount.toString());
 		}
 		if (options.containsKeyAndNotNull("tax")) {
 			this.tax = new BigDecimal(options.getDouble("tax"));
@@ -332,6 +332,7 @@ public class PaymentProxy extends KrollProxy {
 				this.shortDescription, paymentIntent);
 		payment.items(items).paymentDetails(paymentDetails);
 		payment.custom("This is text that will be associated with the payment that the app can use.");
+		Log.d(LCAT, "Log for Gianluca: payment=" + payment.toString());
 		return payment;
 	}
 
