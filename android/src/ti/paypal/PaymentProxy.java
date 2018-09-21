@@ -44,6 +44,8 @@ import com.paypal.android.sdk.payments.ProofOfPayment;
 
 @Kroll.proxy(creatableInModule = PaypalModule.class)
 public class PaymentProxy extends KrollProxy {
+	private final String DEFAULTCURRENCY = "USD";
+
 	private final class PaymentResultHandler implements TiActivityResultHandler {
 		public void onError(Activity arg0, int arg1, Exception e) {
 			Log.e(LCAT, e.getMessage());
@@ -257,10 +259,9 @@ public class PaymentProxy extends KrollProxy {
 				if (dict.containsKeyAndNotNull("sku")) {
 					paymentItem.setSku(dict.getString("sku"));
 				}
-				paymentItem.setCurrency("USD");
+				paymentItem.setCurrency(DEFAULTCURRENCY);
 				if (dict.containsKeyAndNotNull("currency")) {
 					paymentItem.setCurrency(dict.getString("currency"));
-
 				}
 				if (dict.containsKeyAndNotNull("quantity")) {
 					paymentItem.setQuantity(dict.getInt("quantity"));
